@@ -1,0 +1,6 @@
+EnsembleSVM NEWS - User visible changes.
+
+* 1.1: Removed deprecated command line argument related to cross-validation from split-data tool. 
+			 Library API and ABI remain unchanged.
+
+* 1.0: initial release.
