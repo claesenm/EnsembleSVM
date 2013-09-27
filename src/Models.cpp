@@ -166,6 +166,11 @@ Prediction Model::predict(const struct svm_node *x) const{
 	SparseVector sv(x);
 	return predict(sv);
 }
+std::vector<double> Model::decision_value(const struct svm_node *x) const{
+	SparseVector sv(x);
+	return decision_value(sv);
+}
+
 
 BinaryModel::BinaryModel():Model(){}
 BinaryModel::BinaryModel(const BinaryModel& orig):Model(orig){}

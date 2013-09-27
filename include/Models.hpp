@@ -114,6 +114,8 @@ public:
 
 	virtual std::vector<double> decision_value(const SparseVector &i) const=0;
 	virtual std::vector<double> decision_value(const std::vector<double> &i) const=0;
+	virtual std::vector<double> decision_value(const struct svm_node *x) const;
+
 
 	virtual ~Model(){};
 
