@@ -24,6 +24,7 @@
 #include "SparseVector.hpp"
 #include "io.hpp"
 #include "Util.hpp"
+#include "svm.h"
 #include <assert.h>
 #include <math.h>
 #include <string>
@@ -63,6 +64,17 @@ SparseVector::SparseVector(const std::vector<double>& v){
 		if(e!=0)
 			sparseSV.emplace_back(i,e);
 		++i;
+	}
+}
+SparseVector::SparseVector(const svm_node* x){
+	// find size of the node
+	int size=0;
+	while(x[size].index!=-1)
+		++size;
+
+	sparseSV.reserve(size);
+	for(int i=0;i<size;++i){
+		sparseSV.emplace_back(x[i].index,x[i].value);
 	}
 }
 SparseVector::size_type SparseVector::numNonzero() const{ return sparseSV.size(); }

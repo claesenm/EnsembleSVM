@@ -44,12 +44,13 @@ namespace{
 void print_nullptr(const char *s) {}
 
 unique_ptr<SparseVector> Node2SV(const svm_node *node){
-	unique_ptr<SparseVector::SparseSV > sparsesv(new SparseVector::SparseSV());
-	for(int i=0;node[i].index!=-1;++i){
-		sparsesv->push_back(std::make_pair(node[i].index,node[i].value));
-	}
-	unique_ptr<SparseVector> result(new SparseVector(std::move(*sparsesv)));
-	return std::move(result);
+	return unique_ptr<SparseVector>(new SparseVector(node));
+//	unique_ptr<SparseVector::SparseSV > sparsesv(new SparseVector::SparseSV());
+//	for(int i=0;node[i].index!=-1;++i){
+//		sparsesv->push_back(std::make_pair(node[i].index,node[i].value));
+//	}
+//	unique_ptr<SparseVector> result(new SparseVector(std::move(*sparsesv)));
+//	return std::move(result);
 }
 
 /**

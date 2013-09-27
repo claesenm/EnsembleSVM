@@ -37,11 +37,14 @@
 #include "PredicatedFactory.hpp"
 #include "SparseVector.hpp"
 #include "Kernel.hpp"
+#include "svm.h"
 
 /*************************************************************************************************/
 
 using std::unique_ptr;
 using std::string;
+
+class svm_node;
 
 /*************************************************************************************************/
 
@@ -107,6 +110,7 @@ public:
 	 */
 	virtual Prediction predict(const SparseVector &i) const=0;
 	virtual Prediction predict(const std::vector<double> &i) const=0;
+	virtual Prediction predict(const struct svm_node *x) const;
 
 	virtual std::vector<double> decision_value(const SparseVector &i) const=0;
 	virtual std::vector<double> decision_value(const std::vector<double> &i) const=0;

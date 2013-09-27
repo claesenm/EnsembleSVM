@@ -39,6 +39,8 @@ using std::pair;
 
 /*************************************************************************************************/
 
+class svm_node;
+
 namespace ensemble{
 
 /*************************************************************************************************/
@@ -66,6 +68,7 @@ public:
 	SparseVector(const std::vector<double>& v);
 	SparseVector(SparseSV &&content);
 	SparseVector(const SparseVector &v);
+	SparseVector(const svm_node* x);
 
 	SparseVector(SparseVector&& o);
 	SparseVector &operator=(const SparseVector &v)=default;

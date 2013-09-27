@@ -162,6 +162,10 @@ Prediction::Score &Prediction::operator[](unsigned idx){ return scores.at(idx); 
 
 Model::Model(){}
 Model::Model(const Model &orig){}
+Prediction Model::predict(const struct svm_node *x) const{
+	SparseVector sv(x);
+	return predict(sv);
+}
 
 BinaryModel::BinaryModel():Model(){}
 BinaryModel::BinaryModel(const BinaryModel& orig):Model(orig){}
