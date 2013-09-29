@@ -31,7 +31,7 @@
 
 using std::string;
 using std::vector;
-using namespace pipeline;
+using namespace ensemble::pipeline;
 
 typedef std::vector<double> Vector;
 
@@ -72,7 +72,7 @@ bool test_io_multistage(const Pipeline<Res(Arg)>& pipe){
 	stream1 << pipe;
 	str1=buffer1.str();
 
-	pipeline::deserializer<Res(Arg)> d;
+	deserializer<Res(Arg)> d;
 	std::unique_ptr<Pipeline<Res(Arg)>> deserialized = d(stream1);
 
 	stream2 << *deserialized;

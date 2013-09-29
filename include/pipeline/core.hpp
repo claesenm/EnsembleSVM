@@ -40,9 +40,6 @@
 
 /*************************************************************************************************/
 
-// fixme: modify serialization for pipelines and supply automatic deserialization for tested cases
-// fixme: get rid of MultistagePipe, it's the same as any other pipe.
-
 namespace{
 
 __attribute__((noreturn)) void pipeline_error(std::string error){
@@ -83,6 +80,7 @@ bool check_size(const unsigned& t, size_t size){
 
 /*************************************************************************************************/
 
+namespace ensemble{
 namespace pipeline{
 
 template <typename T>
@@ -96,12 +94,13 @@ template <typename T> class Pipeline;
 typedef decltype(nullptr) nullptr_t;
 
 } // forward declarations in pipeline namespace
+} // ensemble namespace
 
 /*************************************************************************************************/
 
 namespace{
 
-using namespace pipeline;
+using namespace ensemble::pipeline;
 
 // expanding tuple into multiple args
 // http://stackoverflow.com/questions/10766112/c11-i-can-go-from-multiple-args-to-tuple-but-can-i-go-from-tuple-to-multiple
@@ -146,6 +145,7 @@ struct construct_impl<Derived,Res,Arg, Tuple, true, Total, N...>{
 
 /*************************************************************************************************/
 
+namespace ensemble{
 namespace pipeline{
 
 // user invokes this
@@ -633,7 +633,8 @@ public:
 
 /*************************************************************************************************/
 
-} // pipeline namespace
+} // ensemble::pipeline namespace
+} // ensemble namespace
 
 /*************************************************************************************************/
 

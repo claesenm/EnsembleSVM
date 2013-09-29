@@ -25,7 +25,7 @@
 #include "BinaryWorkflow.hpp"
 #include "Util.hpp"
 
-using pipeline::MultistagePipe;
+using namespace ensemble::pipeline;
 
 /*************************************************************************************************/
 
@@ -37,8 +37,8 @@ template <typename T>
 struct Helper;
 
 template<typename Res, typename Arg>
-struct Helper<pipeline::MultistagePipe<Res(Arg)>>{
-	static Res eval(const std::unique_ptr<pipeline::MultistagePipe<Res(Arg)>>& p, Arg&& input){
+struct Helper<MultistagePipe<Res(Arg)>>{
+	static Res eval(const std::unique_ptr<MultistagePipe<Res(Arg)>>& p, Arg&& input){
 		return (*p)(std::move(input));
 	}
 };
@@ -312,15 +312,15 @@ std::unique_ptr<BinaryWorkflow> defaultBinaryWorkflow(std::unique_ptr<BinaryMode
 	if(model->num_outputs()==1)
 		return std::unique_ptr<BinaryWorkflow>(new BinaryWorkflow(std::move(model),0.0));
 
-	typedef pipeline::MultistagePipe<double(std::vector<double>)> PostProcess;
+	typedef MultistagePipe<double(std::vector<double>)> PostProcess;
 	std::unique_ptr<PostProcess> postprocessing;
 	double threshold=0.5;
 	if(mv){
-		pipeline::Factory<pipeline::MajorityVote> f;
+		Factory<MajorityVote> f;
 		postprocessing.reset(
 				static_cast<PostProcess*>(f(model->num_outputs()).release()));
 	}else{
-		pipeline::Factory<pipeline::LogisticRegression> f;
+		Factory<LogisticRegression> f;
 		postprocessing.reset(
 				static_cast<PostProcess*>(f(model->num_outputs()).release()));
 	}

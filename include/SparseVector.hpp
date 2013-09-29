@@ -205,26 +205,20 @@ void ElementWiseProduct(const vector<T> &x, const vector<T> &y, vector<T> &xy);
 double squaredNorm(const SparseVector &v);
 double squaredNorm(const vector<pair<unsigned,double> > &v);
 
-/*************************************************************************************************/
-
-} // ensemble namespace
 
 /*************************************************************************************************/
 
 namespace pipeline{
 namespace impl{
 
-using ensemble::SparseVector;
-
-/*************************************************************************************************/
-
 SparseVector Offset(SparseVector&& sv, const std::vector<double>& offsets, size_t numoutputs);
 SparseVector Scale(SparseVector&& sv, const std::vector<double>& scale, size_t numoutputs);
 
 /*************************************************************************************************/
 
-} // pipeline::impl namespace
-} // pipeline namespace
+} // ensemble::pipeline::impl namespace
+} // ensemble::pipeline namespace
+} // ensemble namespace
 
 /*************************************************************************************************/
 

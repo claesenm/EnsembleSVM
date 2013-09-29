@@ -26,7 +26,6 @@
 #include "Ensemble.hpp"
 #include "Util.hpp"
 #include "io.hpp"
-#include "Threads.hpp"
 #include "config.h"
 #include "PredicatedFactory.hpp"
 #include <set>

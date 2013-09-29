@@ -499,12 +499,6 @@ double squaredNorm(const vector<pair<unsigned,double> > &v){
 	return norm;
 }
 
-/*************************************************************************************************/
-
-} // ensemble namespace
-
-/*************************************************************************************************/
-
 namespace pipeline{
 namespace impl{
 
@@ -524,7 +518,8 @@ ensemble::SparseVector Scale(ensemble::SparseVector&& sv, const std::vector<doub
 
 /*************************************************************************************************/
 
-} // pipeline::impl namespace
-} // pipeline namespace
+} // ensemble::pipeline::impl namespace
+} // ensemble::pipeline namespace
+} // ensemble namespace
 
 /*************************************************************************************************/

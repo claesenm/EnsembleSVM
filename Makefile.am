@@ -35,7 +35,7 @@ endif
 
 pkginclude_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
 	include/LibSVM.hpp  include/Models.hpp  include/SparseVector.hpp  include/Util.hpp include/ThreadPool.hpp \
-	include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
+	include/Type2str.hpp include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
 
 pipeline_includedir = $(pkgincludedir)/pipeline
 pipeline_include_HEADERS = include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
@@ -71,24 +71,25 @@ MAINTAINERCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
 # to avoid problems with platforms that dont support double linking of libraries
 lib_LTLIBRARIES = lib/libensemblesvm.la 
 
-dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp include/CLI.hpp \
-	include/PredicatedFactory.hpp \
-	src/DataFile.cpp include/DataFile.hpp \
-	src/Ensemble.cpp include/Ensemble.hpp \
-	src/io.cpp include/io.hpp \
-	src/Kernel.cpp include/Kernel.hpp \
-	src/LibSVM.cpp include/LibSVM.hpp \
-	src/Models.cpp include/Models.hpp \
-	src/SparseVector.cpp include/SparseVector.hpp \
-	src/Util.cpp include/Util.hpp \
-	include/ThreadPool.hpp include/Type2str.hpp \
-	include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp \
-	src/BinaryWorkflow.cpp include/BinaryWorkflow.hpp
+dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp \
+	src/DataFile.cpp 		\
+	src/Ensemble.cpp 		\
+	src/io.cpp  			\
+	src/Kernel.cpp 			\
+	src/LibSVM.cpp 			\
+	src/Models.cpp 			\
+	src/SparseVector.cpp 	\
+	src/Util.cpp			\
+	src/pipeline/pipelines.cpp \
+	src/BinaryWorkflow.cpp
 	
-nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h
+nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp
+
+#nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h
+
 lib_libensemblesvm_la_LDFLAGS = -version-info $(SHLIBVER)
 
-TOOLS=bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data
+TOOLS=bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data esvm-edit
 BINTOOLS=$(patsubst %,$(top_builddir)/bin/%,$(TOOLS))
 
 bin_PROGRAMS=
@@ -141,7 +142,7 @@ check_PROGRAMS += $(top_builddir)/tests/pipelines
 __top_builddir__tests_pipelines_SOURCES = src/tests/pipelines.cpp
 __top_builddir__tests_pipelines_LDADD = $(BASELIBS)
 check_PROGRAMS += $(top_builddir)/tests/sparsevector
-__top_builddir__tests_sparsevector_SOURCES = src/tests/sparsevector.cpp
+__top_builddir__tests_sparsevector_SOURCES = src/tests/test_sparsevector.cpp
 __top_builddir__tests_sparsevector_LDADD = $(BASELIBS)
 check_PROGRAMS += $(top_builddir)/tests/svmmodel
 __top_builddir__tests_svmmodel_SOURCES = src/tests/test_svmmodel.cpp

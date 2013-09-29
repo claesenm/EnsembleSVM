@@ -39,6 +39,7 @@ using ensemble::SVMModel;
 
 /*************************************************************************************************/
 
+namespace ensemble{
 namespace pipeline{
 
 /*************************************************************************************************/
@@ -98,13 +99,15 @@ struct PipeName##_Registrar{											\
 		ensemble::PredicatedFactory<MultistagePipe<Result(Argument)>,const std::string&,std::istream&>	\
 		::registerPtr(&PipeName::matches,&PipeName::deserialize);		\
 	}																	\
-} PipeName##_registrar;
+};
+//} PipeName##_registrar;
 
 #define MULTISTAGEPIPELINE_POST_FACTORY(PipeName)									\
 std::unique_ptr<MultistagePipe<PipeName::result_type(PipeName::argument_type)>> 	\
 PipeName::deserialize(std::istream &is){											\
 	return Factory<PipeName>::deserialize(is);										\
-}
+}																					\
+PipeName##_Registrar PipeName##_registrar;
 
 #define MULTISTAGEPIPELINE_FACTORY_TYPEDEFS(PipeName)	\
 	typedef PipeName::argument_type Arg;				\
@@ -946,9 +949,6 @@ public:
 	Median(DerivedClass&& o):CRTPClass(std::move(o)){}
 
 	Ret process(Arg&& inputs) const override{
-//		std::nth_element(inputs.begin(), inputs.begin()+inputs.size()/2, inputs.end());
-//		typename Arg::iterator it=inputs.begin()+inputs.size()/2;
-//		return *it;
 		impl::median<Ret> m;
 		return m(std::move(inputs));
 	}
@@ -1017,19 +1017,38 @@ public:
 namespace impl{
 
 template<typename T>
-double SVM_impl(const SVMModel& model, T&& arg);
+struct SVM_predict;
 
 template<>
-double SVM_impl(const SVMModel& model, std::vector<double>&& arg){
-	std::vector<double> decvals = model.decision_value(arg);
-	return decvals[0];
-}
+struct SVM_predict<std::vector<double>>{
+	double operator()(const SVMModel& model, std::vector<double>&& arg) const{
+		std::vector<double> decvals = model.decision_value(arg);
+		return decvals[0];
+	}
+};
 
 template<>
-double SVM_impl(const SVMModel& model, SparseVector&& arg){
-	std::vector<double> decvals = model.decision_value(arg);
-	return decvals[0];
-}
+struct SVM_predict<SparseVector>{
+	double operator()(const SVMModel& model, SparseVector&& arg) const{
+		std::vector<double> decvals = model.decision_value(arg);
+		return decvals[0];
+	}
+};
+
+//template<typename T>
+//double SVM_impl(const SVMModel& model, T&& arg);
+//
+//template<>
+//double SVM_impl(const SVMModel& model, std::vector<double>&& arg){
+//	std::vector<double> decvals = model.decision_value(arg);
+//	return decvals[0];
+//}
+//
+//template<>
+//double SVM_impl(const SVMModel& model, SparseVector&& arg){
+//	std::vector<double> decvals = model.decision_value(arg);
+//	return decvals[0];
+//}
 
 } // impl namespace
 
@@ -1099,7 +1118,9 @@ public:
 	SVM(DerivedClass&& o):CRTPClass(std::move(o)),svm(std::move(o.svm)){}
 
 	double process(Arg&& inputs) const override{
-		return impl::SVM_impl(*svm,std::move(inputs));
+		impl::SVM_predict<Arg> p;
+		return p(*svm,std::move(inputs));
+//		return impl::SVM_impl(*svm,std::move(inputs));
 	}
 
 	virtual ~SVM() = default;
@@ -1111,12 +1132,13 @@ public:
 		return std::make_tuple(model,num_inputs);
 	}
 
-	friend class Factory<SVM<double(Arg)>>;
+	friend struct Factory<SVM<double(Arg)>>;
 };
 
 /*************************************************************************************************/
 
-} // pipeline namespace
+} // ensemble::pipeline namespace
+} // ensemble namespace
 
 /*************************************************************************************************/
 

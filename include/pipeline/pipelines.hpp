@@ -36,6 +36,7 @@ using ensemble::SparseVector;
 
 /*************************************************************************************************/
 
+namespace ensemble{
 namespace pipeline{
 
 /*************************************************************************************************/
@@ -133,7 +134,7 @@ struct Factory<MajorityVote>{
 	}
 };
 
-MULTISTAGEPIPELINE_POST_FACTORY(MajorityVote)
+//MULTISTAGEPIPELINE_POST_FACTORY(MajorityVote)
 
 /*************************************************************************************************/
 
@@ -203,7 +204,7 @@ struct Factory<LogisticRegression>{
 	}
 };
 
-MULTISTAGEPIPELINE_POST_FACTORY(LogisticRegression)
+//MULTISTAGEPIPELINE_POST_FACTORY(LogisticRegression)
 
 /*************************************************************************************************/
 
@@ -247,7 +248,7 @@ struct Factory<NormalizeLinear>{
 	}
 };
 
-MULTISTAGEPIPELINE_POST_FACTORY(NormalizeLinear)
+//MULTISTAGEPIPELINE_POST_FACTORY(NormalizeLinear)
 
 /**
  * Use an SVMModel to aggregate data to a single decision value.
@@ -282,7 +283,7 @@ struct Factory<BinarySVMAggregation>{
 	}
 };
 
-MULTISTAGEPIPELINE_POST_FACTORY(BinarySVMAggregation)
+//MULTISTAGEPIPELINE_POST_FACTORY(BinarySVMAggregation)
 
 /*************************************************************************************************/
 
@@ -325,11 +326,12 @@ struct Factory<LinearAggregation>{
 	}
 };
 
-MULTISTAGEPIPELINE_POST_FACTORY(LinearAggregation)
+//MULTISTAGEPIPELINE_POST_FACTORY(LinearAggregation)
 
 /*************************************************************************************************/
 
-} // pipeline namespace
+} // ensemble::pipeline namespace
+} // ensemble namespace
 
 /*************************************************************************************************/
 

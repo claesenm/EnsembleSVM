@@ -131,7 +131,7 @@ am__dirstamp = $(am__leading_dot)dirstamp
 dist_lib_libensemblesvm_la_OBJECTS = src/CLI.lo src/DataFile.lo \
 	src/Ensemble.lo src/io.lo src/Kernel.lo src/LibSVM.lo \
 	src/Models.lo src/SparseVector.lo src/Util.lo \
-	src/BinaryWorkflow.lo
+	src/pipeline/pipelines.lo src/BinaryWorkflow.lo
 nodist_lib_libensemblesvm_la_OBJECTS = src/libsvm/svm.lo
 lib_libensemblesvm_la_OBJECTS = $(dist_lib_libensemblesvm_la_OBJECTS) \
 	$(nodist_lib_libensemblesvm_la_OBJECTS)
@@ -224,15 +224,6 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(dist_lib_libensemblesvm_la_SOURCES) \
 	$(nodist_lib_libensemblesvm_la_SOURCES) \
@@ -483,7 +474,7 @@ ACLOCAL_AMFLAGS = -I m4
 @DEFAULT_LIBSVM_PATH_TRUE@ABS_PATH_TO_LIBSVM = $(top_srcdir)/$(LIBSVMPATH)
 pkginclude_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
 	include/LibSVM.hpp  include/Models.hpp  include/SparseVector.hpp  include/Util.hpp include/ThreadPool.hpp \
-	include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
+	include/Type2str.hpp include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
 
 pipeline_includedir = $(pkgincludedir)/pipeline
 pipeline_include_HEADERS = include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
@@ -505,23 +496,23 @@ MAINTAINERCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
 # we include libsvm code in our shared library
 # to avoid problems with platforms that dont support double linking of libraries
 lib_LTLIBRARIES = lib/libensemblesvm.la 
-dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp include/CLI.hpp \
-	include/PredicatedFactory.hpp \
-	src/DataFile.cpp include/DataFile.hpp \
-	src/Ensemble.cpp include/Ensemble.hpp \
-	src/io.cpp include/io.hpp \
-	src/Kernel.cpp include/Kernel.hpp \
-	src/LibSVM.cpp include/LibSVM.hpp \
-	src/Models.cpp include/Models.hpp \
-	src/SparseVector.cpp include/SparseVector.hpp \
-	src/Util.cpp include/Util.hpp \
-	include/ThreadPool.hpp include/Type2str.hpp \
-	include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp \
-	src/BinaryWorkflow.cpp include/BinaryWorkflow.hpp
+dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp \
+	src/DataFile.cpp 		\
+	src/Ensemble.cpp 		\
+	src/io.cpp  			\
+	src/Kernel.cpp 			\
+	src/LibSVM.cpp 			\
+	src/Models.cpp 			\
+	src/SparseVector.cpp 	\
+	src/Util.cpp			\
+	src/pipeline/pipelines.cpp \
+	src/BinaryWorkflow.cpp
 
-nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h
+nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp
+
+#nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h
 lib_libensemblesvm_la_LDFLAGS = -version-info $(SHLIBVER)
-TOOLS = bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data
+TOOLS = bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data esvm-edit
 BINTOOLS = $(patsubst %,$(top_builddir)/bin/%,$(TOOLS))
 BASELIBS = lib/libensemblesvm.la
 __top_builddir__bin_bootstrap_SOURCES = src/tools/bootstrap.cpp
@@ -658,6 +649,14 @@ src/LibSVM.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/Models.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/SparseVector.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/Util.lo: src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
+src/pipeline/$(am__dirstamp):
+	@$(MKDIR_P) src/pipeline
+	@: > src/pipeline/$(am__dirstamp)
+src/pipeline/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/pipeline/$(DEPDIR)
+	@: > src/pipeline/$(DEPDIR)/$(am__dirstamp)
+src/pipeline/pipelines.lo: src/pipeline/$(am__dirstamp) \
+	src/pipeline/$(DEPDIR)/$(am__dirstamp)
 src/BinaryWorkflow.lo: src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/libsvm/$(am__dirstamp):
@@ -846,6 +845,8 @@ mostlyclean-compile:
 	-rm -f src/io.lo
 	-rm -f src/libsvm/svm.$(OBJEXT)
 	-rm -f src/libsvm/svm.lo
+	-rm -f src/pipeline/pipelines.$(OBJEXT)
+	-rm -f src/pipeline/pipelines.lo
 	-rm -f src/tests/blocks.$(OBJEXT)
 	-rm -f src/tests/pipelines.$(OBJEXT)
 	-rm -f src/tests/sparsevector.$(OBJEXT)
@@ -876,6 +877,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/Util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/io.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/libsvm/$(DEPDIR)/svm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/pipeline/$(DEPDIR)/pipelines.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/blocks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/pipelines.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/sparsevector.Po@am__quote@
@@ -926,6 +928,7 @@ clean-libtool:
 	-rm -rf lib/.libs lib/_libs
 	-rm -rf src/.libs src/_libs
 	-rm -rf src/libsvm/.libs src/libsvm/_libs
+	-rm -rf src/pipeline/.libs src/pipeline/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -1475,6 +1478,8 @@ distclean-generic:
 	-rm -f src/$(am__dirstamp)
 	-rm -f src/libsvm/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/libsvm/$(am__dirstamp)
+	-rm -f src/pipeline/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/pipeline/$(am__dirstamp)
 	-rm -f src/tests/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/tests/$(am__dirstamp)
 	-rm -f src/tools/$(DEPDIR)/$(am__dirstamp)
@@ -1495,7 +1500,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf src/$(DEPDIR) src/libsvm/$(DEPDIR) src/tests/$(DEPDIR) src/tools/$(DEPDIR)
+	-rm -rf src/$(DEPDIR) src/libsvm/$(DEPDIR) src/pipeline/$(DEPDIR) src/tests/$(DEPDIR) src/tools/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -1545,7 +1550,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf src/$(DEPDIR) src/libsvm/$(DEPDIR) src/tests/$(DEPDIR) src/tools/$(DEPDIR)
+	-rm -rf src/$(DEPDIR) src/libsvm/$(DEPDIR) src/pipeline/$(DEPDIR) src/tests/$(DEPDIR) src/tools/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
