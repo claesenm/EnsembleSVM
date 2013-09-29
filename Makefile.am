@@ -20,7 +20,7 @@ AM_CPPFLAGS =-I$(top_srcdir)/include -I$(top_builddir)/src/libsvm -ffast-math
 # DISTRIBUTION #
 ################
 
-EXTRA_DIST = doxygen.cfg COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp $(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT
+EXTRA_DIST = doxygen.cfg COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp $(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT boost include/any_iterator
 
 #####################
 # AUTOTOOLS SCRIPTS #
@@ -33,13 +33,20 @@ else
 ABS_PATH_TO_LIBSVM=$(LIBSVMPATH)
 endif
 
-include_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
+pkginclude_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
 	include/LibSVM.hpp  include/Models.hpp  include/SparseVector.hpp  include/Util.hpp include/ThreadPool.hpp \
-	include/PredicatedFactory.hpp include/BinaryWorkflow.hpp \
-	include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
-	
-# todo: do I need this line?
+	include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
 
+pipeline_includedir = $(pkgincludedir)/pipeline
+pipeline_include_HEADERS = include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
+
+anyiter_includedir =  $(pkgincludedir)/any_iterator
+anyiter_include_HEADERS = include/any_iterator/any_iterator.hpp
+
+anyiter_detail_includedir = $(pkgincludedir)/any_iterator/detail
+anyiter_detail_include_HEADERS = include/any_iterator/detail/any_iterator_abstract_base.hpp \
+	include/any_iterator/detail/any_iterator_metafunctions.hpp \
+	include/any_iterator/detail/any_iterator_wrapper.hpp
 
 #######
 # CONSTRUCT CORE LIBRARY

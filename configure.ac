@@ -5,7 +5,8 @@ AC_INIT([EnsembleSVM], [2.0], [marc.claesen@esat.kuleuven.be],[ensemblesvm],[htt
 AC_CONFIG_SRCDIR([src/CLI.cpp])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([foreign 1.5 no-define dist-bzip2 -Wall -Wno-portability subdir-objects])
+#AM_INIT_AUTOMAKE([foreign 1.5 no-define dist-bzip2 -Wall -Wno-portability subdir-objects tar-ustar])
+AM_INIT_AUTOMAKE([foreign no-define dist-bzip2 -Wall -Wno-portability subdir-objects 1.9 tar-ustar])
 
 #####
 # BASIC CONFIGURATION

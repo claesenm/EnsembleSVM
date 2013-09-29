@@ -39,7 +39,7 @@ using std::pair;
 
 /*************************************************************************************************/
 
-class svm_node;
+struct svm_node;
 
 namespace ensemble{
 

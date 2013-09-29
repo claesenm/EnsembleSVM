@@ -71,7 +71,9 @@ check_PROGRAMS = $(top_builddir)/tests/blocks$(EXEEXT) \
 	$(top_builddir)/tests/svmensemble$(EXEEXT) \
 	$(top_builddir)/tests/workflow$(EXEEXT)
 subdir = .
-DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
+DIST_COMMON = README $(am__configure_deps) \
+	$(anyiter_detail_include_HEADERS) $(anyiter_include_HEADERS) \
+	$(pipeline_include_HEADERS) $(pkginclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS \
 	COPYING.LESSER INSTALL NEWS THANKS build-aux/COPYING \
@@ -119,7 +121,10 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(includedir)"
+	"$(DESTDIR)$(anyiter_detail_includedir)" \
+	"$(DESTDIR)$(anyiter_includedir)" \
+	"$(DESTDIR)$(pipeline_includedir)" \
+	"$(DESTDIR)$(pkgincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 lib_libensemblesvm_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
@@ -274,7 +279,8 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-HEADERS = $(include_HEADERS)
+HEADERS = $(anyiter_detail_include_HEADERS) $(anyiter_include_HEADERS) \
+	$(pipeline_include_HEADERS) $(pkginclude_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
@@ -467,7 +473,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_builddir)/src/libsvm -ffast-math
 ################
 # DISTRIBUTION #
 ################
-EXTRA_DIST = doxygen.cfg COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp $(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT
+EXTRA_DIST = doxygen.cfg COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp $(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT boost include/any_iterator
 
 #####################
 # AUTOTOOLS SCRIPTS #
@@ -475,10 +481,18 @@ EXTRA_DIST = doxygen.cfg COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp $(
 ACLOCAL_AMFLAGS = -I m4
 @DEFAULT_LIBSVM_PATH_FALSE@ABS_PATH_TO_LIBSVM = $(LIBSVMPATH)
 @DEFAULT_LIBSVM_PATH_TRUE@ABS_PATH_TO_LIBSVM = $(top_srcdir)/$(LIBSVMPATH)
-include_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
+pkginclude_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
 	include/LibSVM.hpp  include/Models.hpp  include/SparseVector.hpp  include/Util.hpp include/ThreadPool.hpp \
-	include/PredicatedFactory.hpp include/BinaryWorkflow.hpp \
-	include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
+	include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
+
+pipeline_includedir = $(pkgincludedir)/pipeline
+pipeline_include_HEADERS = include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
+anyiter_includedir = $(pkgincludedir)/any_iterator
+anyiter_include_HEADERS = include/any_iterator/any_iterator.hpp
+anyiter_detail_includedir = $(pkgincludedir)/any_iterator/detail
+anyiter_detail_include_HEADERS = include/any_iterator/detail/any_iterator_abstract_base.hpp \
+	include/any_iterator/detail/any_iterator_metafunctions.hpp \
+	include/any_iterator/detail/any_iterator_wrapper.hpp
 
 
 # copy libsvm source files we will end up using to make sure there is no mess
@@ -915,27 +929,90 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
-install-includeHEADERS: $(include_HEADERS)
+install-anyiter_detail_includeHEADERS: $(anyiter_detail_include_HEADERS)
 	@$(NORMAL_INSTALL)
-	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
+	@list='$(anyiter_detail_include_HEADERS)'; test -n "$(anyiter_detail_includedir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(includedir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(includedir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(anyiter_detail_includedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(anyiter_detail_includedir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(includedir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(includedir)" || exit $$?; \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(anyiter_detail_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(anyiter_detail_includedir)" || exit $$?; \
 	done
 
-uninstall-includeHEADERS:
+uninstall-anyiter_detail_includeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
+	@list='$(anyiter_detail_include_HEADERS)'; test -n "$(anyiter_detail_includedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(anyiter_detail_includedir)'; $(am__uninstall_files_from_dir)
+install-anyiter_includeHEADERS: $(anyiter_include_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(anyiter_include_HEADERS)'; test -n "$(anyiter_includedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(anyiter_includedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(anyiter_includedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(anyiter_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(anyiter_includedir)" || exit $$?; \
+	done
+
+uninstall-anyiter_includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(anyiter_include_HEADERS)'; test -n "$(anyiter_includedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(anyiter_includedir)'; $(am__uninstall_files_from_dir)
+install-pipeline_includeHEADERS: $(pipeline_include_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(pipeline_include_HEADERS)'; test -n "$(pipeline_includedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pipeline_includedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pipeline_includedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(pipeline_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(pipeline_includedir)" || exit $$?; \
+	done
+
+uninstall-pipeline_includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pipeline_include_HEADERS)'; test -n "$(pipeline_includedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pipeline_includedir)'; $(am__uninstall_files_from_dir)
+install-pkgincludeHEADERS: $(pkginclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(pkginclude_HEADERS)'; test -n "$(pkgincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(pkgincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(pkgincludedir)" || exit $$?; \
+	done
+
+uninstall-pkgincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkginclude_HEADERS)'; test -n "$(pkgincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgincludedir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -1362,7 +1439,7 @@ install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(anyiter_detail_includedir)" "$(DESTDIR)$(anyiter_includedir)" "$(DESTDIR)$(pipeline_includedir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -1435,7 +1512,9 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-includeHEADERS
+install-data-am: install-anyiter_detail_includeHEADERS \
+	install-anyiter_includeHEADERS install-pipeline_includeHEADERS \
+	install-pkgincludeHEADERS
 
 install-dvi: install-dvi-recursive
 
@@ -1483,8 +1562,10 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-anyiter_detail_includeHEADERS \
+	uninstall-anyiter_includeHEADERS uninstall-binPROGRAMS \
+	uninstall-libLTLIBRARIES uninstall-pipeline_includeHEADERS \
+	uninstall-pkgincludeHEADERS
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
 	check-am ctags-recursive install install-am install-strip \
@@ -1499,21 +1580,23 @@ uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS \
 	distclean-compile distclean-generic distclean-hdr \
 	distclean-libtool distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am \
-	install-includeHEADERS install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
+	install install-am install-anyiter_detail_includeHEADERS \
+	install-anyiter_includeHEADERS install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-man install-pdf install-pdf-am \
+	install-pipeline_includeHEADERS install-pkgincludeHEADERS \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-includeHEADERS \
-	uninstall-libLTLIBRARIES
+	uninstall-anyiter_detail_includeHEADERS \
+	uninstall-anyiter_includeHEADERS uninstall-binPROGRAMS \
+	uninstall-libLTLIBRARIES uninstall-pipeline_includeHEADERS \
+	uninstall-pkgincludeHEADERS
 
-
-# todo: do I need this line?
 
 #######
 # CONSTRUCT CORE LIBRARY

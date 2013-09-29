@@ -44,7 +44,7 @@
 using std::unique_ptr;
 using std::string;
 
-class svm_node;
+struct svm_node;
 
 /*************************************************************************************************/
 

@@ -137,7 +137,7 @@ std::vector<double> readConstants(std::istream &is, unsigned numclasses){
 
 	unsigned numconstants = numclasses*(numclasses-1)/2;
 	std::vector<double> constants(numconstants,0);
-	for(unsigned i=0;i<numconstants;++i)	// fixme stream_iterator
+	for(unsigned i=0;i<numconstants;++i)
 		iss >> constants[i];
 	return std::move(constants);
 }
