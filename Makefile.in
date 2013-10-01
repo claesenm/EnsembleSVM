@@ -183,17 +183,18 @@ am___top_builddir__bin_split_data_OBJECTS =  \
 __top_builddir__bin_split_data_OBJECTS =  \
 	$(am___top_builddir__bin_split_data_OBJECTS)
 __top_builddir__bin_split_data_DEPENDENCIES = $(BASELIBS)
-am___top_builddir__tests_blocks_OBJECTS = src/tests/blocks.$(OBJEXT)
+am___top_builddir__tests_blocks_OBJECTS =  \
+	src/tests/test_blocks.$(OBJEXT)
 __top_builddir__tests_blocks_OBJECTS =  \
 	$(am___top_builddir__tests_blocks_OBJECTS)
 __top_builddir__tests_blocks_DEPENDENCIES = $(BASELIBS)
 am___top_builddir__tests_pipelines_OBJECTS =  \
-	src/tests/pipelines.$(OBJEXT)
+	src/tests/test_pipelines.$(OBJEXT)
 __top_builddir__tests_pipelines_OBJECTS =  \
 	$(am___top_builddir__tests_pipelines_OBJECTS)
 __top_builddir__tests_pipelines_DEPENDENCIES = $(BASELIBS)
 am___top_builddir__tests_sparsevector_OBJECTS =  \
-	src/tests/sparsevector.$(OBJEXT)
+	src/tests/test_sparsevector.$(OBJEXT)
 __top_builddir__tests_sparsevector_OBJECTS =  \
 	$(am___top_builddir__tests_sparsevector_OBJECTS)
 __top_builddir__tests_sparsevector_DEPENDENCIES = $(BASELIBS)
@@ -474,7 +475,7 @@ ACLOCAL_AMFLAGS = -I m4
 @DEFAULT_LIBSVM_PATH_TRUE@ABS_PATH_TO_LIBSVM = $(top_srcdir)/$(LIBSVMPATH)
 pkginclude_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
 	include/LibSVM.hpp  include/Models.hpp  include/SparseVector.hpp  include/Util.hpp include/ThreadPool.hpp \
-	include/Type2str.hpp include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
+	include/Type2str.hpp include/SelectiveFactory.hpp include/BinaryWorkflow.hpp include/Registration.hpp include/Executable.hpp
 
 pipeline_includedir = $(pkgincludedir)/pipeline
 pipeline_include_HEADERS = include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
@@ -495,7 +496,7 @@ MAINTAINERCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
 
 # we include libsvm code in our shared library
 # to avoid problems with platforms that dont support double linking of libraries
-lib_LTLIBRARIES = lib/libensemblesvm.la 
+lib_LTLIBRARIES = lib/libensemblesvm.la
 dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp \
 	src/DataFile.cpp 		\
 	src/Ensemble.cpp 		\
@@ -509,11 +510,7 @@ dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp \
 	src/BinaryWorkflow.cpp
 
 nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp
-
-#nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h
 lib_libensemblesvm_la_LDFLAGS = -version-info $(SHLIBVER)
-TOOLS = bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data esvm-edit
-BINTOOLS = $(patsubst %,$(top_builddir)/bin/%,$(TOOLS))
 BASELIBS = lib/libensemblesvm.la
 __top_builddir__bin_bootstrap_SOURCES = src/tools/bootstrap.cpp
 __top_builddir__bin_bootstrap_LDADD = $(BASELIBS)
@@ -533,11 +530,11 @@ __top_builddir__bin_split_data_SOURCES = src/tools/split-data.cpp
 __top_builddir__bin_split_data_LDADD = $(BASELIBS)
 __top_builddir__bin_esvm_edit_SOURCES = src/tools/esvm-edit.cpp
 __top_builddir__bin_esvm_edit_LDADD = $(BASELIBS)
-__top_builddir__tests_blocks_SOURCES = src/tests/blocks.cpp
+__top_builddir__tests_blocks_SOURCES = src/tests/test_blocks.cpp
 __top_builddir__tests_blocks_LDADD = $(BASELIBS)
-__top_builddir__tests_pipelines_SOURCES = src/tests/pipelines.cpp
+__top_builddir__tests_pipelines_SOURCES = src/tests/test_pipelines.cpp
 __top_builddir__tests_pipelines_LDADD = $(BASELIBS)
-__top_builddir__tests_sparsevector_SOURCES = src/tests/sparsevector.cpp
+__top_builddir__tests_sparsevector_SOURCES = src/tests/test_sparsevector.cpp
 __top_builddir__tests_sparsevector_LDADD = $(BASELIBS)
 __top_builddir__tests_svmmodel_SOURCES = src/tests/test_svmmodel.cpp
 __top_builddir__tests_svmmodel_LDADD = $(BASELIBS)
@@ -787,7 +784,7 @@ src/tests/$(am__dirstamp):
 src/tests/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/tests/$(DEPDIR)
 	@: > src/tests/$(DEPDIR)/$(am__dirstamp)
-src/tests/blocks.$(OBJEXT): src/tests/$(am__dirstamp) \
+src/tests/test_blocks.$(OBJEXT): src/tests/$(am__dirstamp) \
 	src/tests/$(DEPDIR)/$(am__dirstamp)
 $(top_builddir)/tests/$(am__dirstamp):
 	@$(MKDIR_P) $(top_builddir)/tests
@@ -795,12 +792,12 @@ $(top_builddir)/tests/$(am__dirstamp):
 $(top_builddir)/tests/blocks$(EXEEXT): $(__top_builddir__tests_blocks_OBJECTS) $(__top_builddir__tests_blocks_DEPENDENCIES) $(EXTRA___top_builddir__tests_blocks_DEPENDENCIES) $(top_builddir)/tests/$(am__dirstamp)
 	@rm -f $(top_builddir)/tests/blocks$(EXEEXT)
 	$(CXXLINK) $(__top_builddir__tests_blocks_OBJECTS) $(__top_builddir__tests_blocks_LDADD) $(LIBS)
-src/tests/pipelines.$(OBJEXT): src/tests/$(am__dirstamp) \
+src/tests/test_pipelines.$(OBJEXT): src/tests/$(am__dirstamp) \
 	src/tests/$(DEPDIR)/$(am__dirstamp)
 $(top_builddir)/tests/pipelines$(EXEEXT): $(__top_builddir__tests_pipelines_OBJECTS) $(__top_builddir__tests_pipelines_DEPENDENCIES) $(EXTRA___top_builddir__tests_pipelines_DEPENDENCIES) $(top_builddir)/tests/$(am__dirstamp)
 	@rm -f $(top_builddir)/tests/pipelines$(EXEEXT)
 	$(CXXLINK) $(__top_builddir__tests_pipelines_OBJECTS) $(__top_builddir__tests_pipelines_LDADD) $(LIBS)
-src/tests/sparsevector.$(OBJEXT): src/tests/$(am__dirstamp) \
+src/tests/test_sparsevector.$(OBJEXT): src/tests/$(am__dirstamp) \
 	src/tests/$(DEPDIR)/$(am__dirstamp)
 $(top_builddir)/tests/sparsevector$(EXEEXT): $(__top_builddir__tests_sparsevector_OBJECTS) $(__top_builddir__tests_sparsevector_DEPENDENCIES) $(EXTRA___top_builddir__tests_sparsevector_DEPENDENCIES) $(top_builddir)/tests/$(am__dirstamp)
 	@rm -f $(top_builddir)/tests/sparsevector$(EXEEXT)
@@ -847,9 +844,9 @@ mostlyclean-compile:
 	-rm -f src/libsvm/svm.lo
 	-rm -f src/pipeline/pipelines.$(OBJEXT)
 	-rm -f src/pipeline/pipelines.lo
-	-rm -f src/tests/blocks.$(OBJEXT)
-	-rm -f src/tests/pipelines.$(OBJEXT)
-	-rm -f src/tests/sparsevector.$(OBJEXT)
+	-rm -f src/tests/test_blocks.$(OBJEXT)
+	-rm -f src/tests/test_pipelines.$(OBJEXT)
+	-rm -f src/tests/test_sparsevector.$(OBJEXT)
 	-rm -f src/tests/test_svmensemble.$(OBJEXT)
 	-rm -f src/tests/test_svmmodel.$(OBJEXT)
 	-rm -f src/tests/test_workflow.$(OBJEXT)
@@ -878,9 +875,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/io.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/libsvm/$(DEPDIR)/svm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/pipeline/$(DEPDIR)/pipelines.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/blocks.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/pipelines.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/sparsevector.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_blocks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_pipelines.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_sparsevector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_svmensemble.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_svmmodel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_workflow.Po@am__quote@

@@ -38,9 +38,11 @@
 #include "LibSVM.hpp"
 #include "DataFile.hpp"
 #include "BinaryWorkflow.hpp"
+#include "Executable.hpp"
 #include <errno.h>
 #include <functional>
 #include <cmath>
+
 
 #ifdef HAVE_PTHREAD
 #include "ThreadPool.hpp"

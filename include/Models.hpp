@@ -34,7 +34,7 @@
 #include <vector>
 #include <iostream>
 
-#include "PredicatedFactory.hpp"
+#include "SelectiveFactory.hpp"
 #include "SparseVector.hpp"
 #include "Kernel.hpp"
 #include "svm.h"
@@ -164,30 +164,19 @@ public:
  *
  * In serialization, the derived class must output its name in the first line.
  */
-#define REGISTER_BINARYMODEL_HPP(ClassName)			\
-struct ClassName##_Registrar{						\
-	static bool matches(const std::string& str);	\
-	ClassName##_Registrar();						\
-};
-
-#define REGISTER_BINARYMODEL_CPP(ClassName)										\
-bool ClassName##_Registrar::matches(const std::string& str){					\
-	return str.compare(ClassName::NAME)==0;										\
-}																				\
-ClassName##_Registrar::ClassName##_Registrar(){									\
-		PredicatedFactory<ensemble::BinaryModel,const std::string&,std::istream&>	\
-		::registerPtr(&ClassName##_Registrar::matches,&ClassName::deserialize);	\
-}																				\
-ClassName##_Registrar ClassName##_registrar;
-
-// todo document
+#define BINARYMODEL_REGISTRATION(ClassName) \
+ensemble::SelectiveFactory<ensemble::BinaryModel,const std::string&,std::istream&>	\
+		::registerPtr(&ClassName::matches,&ClassName::deserialize);
 
 /**
- * Helper macro to define the class' name within the class. Must be public.
+ * Helper macro to define the class' name and a static string matching function. Must be public.
  */
 #define REGISTER_BINARYMODEL_IN_CLASS(ClassName) 				\
 static constexpr const char* NAME=#ClassName;					\
-static unique_ptr<BinaryModel> deserialize(std::istream& is);
+static unique_ptr<BinaryModel> deserialize(std::istream& is);	\
+static bool matches(const std::string& str){					\
+	return str.compare(ClassName::NAME)==0;						\
+}
 
 /*************************************************************************************************/
 
@@ -364,8 +353,6 @@ public:
 	REGISTER_BINARYMODEL_IN_CLASS(SVMModel)
 
 };
-
-REGISTER_BINARYMODEL_HPP(SVMModel)
 
 /*************************************************************************************************/
 

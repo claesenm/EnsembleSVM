@@ -23,10 +23,12 @@
 
 
 #include "Ensemble.hpp"
-#include "PredicatedFactory.hpp"
+#include "SelectiveFactory.hpp"
+#include "Executable.hpp"
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cstdlib>
 
 /*************************************************************************************************/
 

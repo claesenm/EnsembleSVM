@@ -27,7 +27,7 @@
 /*************************************************************************************************/
 
 #include "pipeline/blocks.hpp"
-#include "PredicatedFactory.hpp"
+#include "SelectiveFactory.hpp"
 #include "SparseVector.hpp"
 #include <iostream>
 #include <string>
@@ -42,12 +42,114 @@ namespace pipeline{
 /*************************************************************************************************/
 
 template <typename T>
+class MultistagePipe;
+
+/**
+ * Class used to model multistage pipelines. These pipelines can deserialize automatically.
+ */
+template <typename Res, typename Arg>
+class MultistagePipe<Res(Arg)> : public Pipeline<Res(Arg)>{
+protected:
+	MultistagePipe(size_t input_len, size_t output_len)
+	:Pipeline<Res(Arg)>(input_len,output_len)
+	{}
+
+	MultistagePipe(size_t input_len)
+	:Pipeline<Res(Arg)>(input_len)
+	{}
+
+	MultistagePipe(const MultistagePipe<Res(Arg)>& o)
+	:Pipeline<Res(Arg)>(o)
+	{}
+
+	MultistagePipe(MultistagePipe<Res(Arg)>&& o)
+	:Pipeline<Res(Arg)>(std::move(o))
+	{}
+
+public:
+	virtual ~MultistagePipe(){}
+};
+
+/*************************************************************************************************/
+
+/**
+ * PipeName: name to use for the multistage pipeline.
+ * Result: type of the result of the pipeline.
+ * Argument: type of the argument of the pipeline.
+ *
+ * This macro creates a wrapper class around a pipeline of the correct signature.
+ * The wrapper is automatically registered for serialization and deserialization.
+ *
+ * User must define the factory to produce the pipeline.
+ * This must be done via Factory<PipeName>::operator().
+ */
+#define MULTISTAGEPIPELINE(PipeName,Result,Argument)					\
+class PipeName : public MultistagePipe<Result(Argument)>{ 				\
+public: 																\
+	typedef Result result_type;											\
+	typedef Argument argument_type;										\
+private:																\
+	const std::unique_ptr<Pipeline<Result(Argument)>> pipe;				\
+	PipeName(std::unique_ptr<Pipeline<Result(Argument)>> ptr)			\
+	:MultistagePipe<Result(Argument)>(ptr->num_inputs(),ptr->num_outputs()),	\
+	pipe(std::move(ptr)){ 												\
+		assert(pipe && "Pipe cannot be a nullptr!");					\
+	}																	\
+	template <template <class, class=nullptr_t> class Derived, class Internal> \
+	PipeName(std::unique_ptr<Derived<Result(Argument),Internal>> ptr)	\
+	:MultistagePipe<Result(Argument)>(ptr->num_inputs(),ptr->num_outputs()),	\
+	 pipe(static_cast<Pipeline<Result(Argument)>*>(ptr.release())){}	\
+public:																	\
+	static constexpr const char* name=#PipeName;						\
+	Result operator()(Argument&& arg) const override{					\
+		return (*pipe)(std::move(arg));									\
+	}																	\
+	static bool matches(const std::string& label){						\
+		return (label.compare(name)==0);								\
+	}																	\
+	static std::unique_ptr<MultistagePipe<Result(Argument)>> 			\
+	deserialize(std::istream &is);										\
+	std::unique_ptr<Pipeline<Result(Argument)>> clone() const override{	\
+		return std::unique_ptr<Pipeline<Result(Argument)>>(new PipeName(pipe->clone())); \
+	}																	\
+	void serialize(std::ostream& os) const override final{				\
+		os << name << std::endl;										\
+		pipe->serialize(os);											\
+	}																	\
+	friend struct Factory<PipeName>;									\
+	PipeName() = delete;												\
+	virtual size_t num_inputs() const override{							\
+		return pipe->internal_num_inputs();								\
+	}																	\
+};
+
+#define MULTISTAGEPIPELINE_POST_FACTORY(PipeName)								\
+std::unique_ptr<MultistagePipe<PipeName::result_type(PipeName::argument_type)>> \
+PipeName::deserialize(std::istream &is){										\
+	return Factory<PipeName>::deserialize(is);									\
+}
+
+#define MULTISTAGEPIPELINE_REGISTRATION(PipeName) \
+ensemble::SelectiveFactory<MultistagePipe<	\
+	typename PipeName::result_type(typename PipeName::argument_type)>,	\
+	const std::string&, std::istream&>::registerPtr(	\
+			&PipeName::matches,	\
+			&PipeName::deserialize);
+
+
+#define MULTISTAGEPIPELINE_FACTORY_TYPEDEFS(PipeName)	\
+	typedef PipeName::argument_type Arg;				\
+	typedef PipeName::result_type Res;
+
+/*************************************************************************************************/
+
+template <typename T>
 struct deserializer;
 
 template <typename Res, typename Arg>
 struct deserializer<Res(Arg)>{
 	// the factory that will produce pipelines for this deserializer
-	typedef ensemble::PredicatedFactory<MultistagePipe<Res(Arg)>,const std::string&,std::istream&> MetaFactory;
+	typedef ensemble::SelectiveFactory<MultistagePipe<Res(Arg)>,const std::string&,std::istream&> MetaFactory;
 
 	std::unique_ptr<MultistagePipe<Res(Arg)>> operator()(std::istream& stream){
 		std::string line;
@@ -92,12 +194,16 @@ struct Factory<MajorityVote>{
 	 */
 	std::unique_ptr<MajorityVote>
 	operator()(size_t numinputs=0) const{
+
 		Factory<Threshold<Vector(Vector)>> fact_thresh;
 		auto thresh = fact_thresh(0.0,1.0,0.0,numinputs);
+
 		Factory<Scale<Vector(Vector)>> fact_scaled;
 		auto scale = fact_scaled(std::move(thresh),1.0);
+
 		Factory<Average<double(Vector)>> fact_avg;
 		auto avg = fact_avg(std::move(scale));
+
 		return std::unique_ptr<MajorityVote>(new MajorityVote(std::move(avg)));
 	}
 	/**

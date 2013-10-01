@@ -30,6 +30,7 @@
 #include "Ensemble.hpp"
 #include "DataFile.hpp"
 #include "ThreadPool.hpp"
+#include "Executable.hpp"
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>

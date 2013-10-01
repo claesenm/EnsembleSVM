@@ -33,6 +33,8 @@
 #include <vector>
 #include <memory>
 
+using ensemble::pipeline::MultistagePipe;
+
 /*************************************************************************************************/
 
 namespace ensemble{
@@ -54,8 +56,8 @@ namespace ensemble{
 class BinaryWorkflow final : public BinaryModel{
 public:
 	typedef std::vector<double> Vector;
-	typedef pipeline::MultistagePipe<SparseVector(SparseVector)> Preprocessing;
-	typedef pipeline::MultistagePipe<double(Vector)> Postprocessing;
+	typedef MultistagePipe<SparseVector(SparseVector)> Preprocessing;
+	typedef MultistagePipe<double(Vector)> Postprocessing;
 
 protected:
 	std::unique_ptr<Preprocessing> preprocessing;
@@ -117,7 +119,7 @@ public:
 	REGISTER_BINARYMODEL_IN_CLASS(BinaryWorkflow)
 };
 
-REGISTER_BINARYMODEL_HPP(BinaryWorkflow)
+//REGISTER_BINARYMODEL_HPP(BinaryWorkflow)
 
 /*************************************************************************************************/
 

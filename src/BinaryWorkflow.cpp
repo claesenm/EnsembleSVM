@@ -224,7 +224,7 @@ std::unique_ptr<BinaryModel> BinaryWorkflow::deserialize(std::istream& stream){
 	/**
 	 * Get preprocessor.
 	 */
-	typedef ensemble::PredicatedFactory<Preprocessing,
+	typedef ensemble::SelectiveFactory<Preprocessing,
 			const std::string&,std::istream&> PreprocessorFactory;
 	typedef std::unique_ptr<Preprocessing> PreprocessingPtr;
 
@@ -246,7 +246,7 @@ std::unique_ptr<BinaryModel> BinaryWorkflow::deserialize(std::istream& stream){
 	/**
 	 * Get predictor.
 	 */
-	typedef ensemble::PredicatedFactory<BinaryModel,
+	typedef ensemble::SelectiveFactory<BinaryModel,
 			const std::string&,std::istream&> PredictorFactory;
 	typedef std::unique_ptr<BinaryModel> PredictorPtr;
 
@@ -267,7 +267,7 @@ std::unique_ptr<BinaryModel> BinaryWorkflow::deserialize(std::istream& stream){
 	/**
 	 * Get postprocessor.
 	 */
-	typedef ensemble::PredicatedFactory<Postprocessing,
+	typedef ensemble::SelectiveFactory<Postprocessing,
 			const std::string&,std::istream&> PostprocessorFactory;
 	typedef std::unique_ptr<Postprocessing> PostprocessingPtr;
 
@@ -280,7 +280,6 @@ std::unique_ptr<BinaryModel> BinaryWorkflow::deserialize(std::istream& stream){
 	getline(stream,line);
 	if(!line.empty()){
 		std::vector<PostprocessingPtr> postproc=PostprocessorFactory::Produce(line,stream);
-
 		assert(postproc.size()<2 && "Error, retrieved multiple preprocessors from stream!");
 		if(postproc.size()==1) postprocessor=std::move(postproc[0]);
 	}
@@ -303,8 +302,6 @@ std::unique_ptr<BinaryModel> BinaryWorkflow::deserialize(std::istream& stream){
 				thresh
 			));
 }
-
-REGISTER_BINARYMODEL_CPP(BinaryWorkflow)
 
 /*************************************************************************************************/
 

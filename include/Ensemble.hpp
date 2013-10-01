@@ -26,13 +26,7 @@
 
 /*************************************************************************************************/
 
-//#include <set>
-//#include <vector>
-//#include <deque>
-//#include <map>
 #include <memory>
-//#include <list>
-//#include <cassert>
 #include <iostream>
 #include "Models.hpp"
 #include "Kernel.hpp"
@@ -186,7 +180,7 @@ public:
 	REGISTER_BINARYMODEL_IN_CLASS(SVMEnsemble)
 };
 
-REGISTER_BINARYMODEL_HPP(SVMEnsemble)
+//REGISTER_BINARYMODEL_HPP(SVMEnsemble)
 
 /*************************************************************************************************/
 

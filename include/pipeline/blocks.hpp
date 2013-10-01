@@ -41,80 +41,6 @@ using ensemble::SVMModel;
 
 namespace ensemble{
 namespace pipeline{
-
-/*************************************************************************************************/
-
-/**
- * PipeName: name to use for the multistage pipeline.
- * Result: type of the result of the pipeline.
- * Argument: type of the argument of the pipeline.
- *
- * This macro creates a wrapper class around a pipeline of the correct signature.
- * The wrapper is automatically registered for serialization and deserialization.
- *
- * User must define the factory to produce the pipeline.
- * This must be done via Factory<PipeName>::operator().
- */
-#define MULTISTAGEPIPELINE(PipeName,Result,Argument)					\
-class PipeName : public MultistagePipe<Result(Argument)>{ 				\
-public: 																\
-	typedef Result result_type;											\
-	typedef Argument argument_type;										\
-private:																\
-	const std::unique_ptr<Pipeline<Result(Argument)>> pipe;				\
-	PipeName(std::unique_ptr<Pipeline<Result(Argument)>> ptr)			\
-	:MultistagePipe<Result(Argument)>(ptr->num_inputs(),ptr->num_outputs()),	\
-	pipe(std::move(ptr)){ 												\
-		assert(pipe && "Pipe cannot be a nullptr!");					\
-	}																	\
-	template <template <class, class=nullptr_t> class Derived, class Internal> \
-	PipeName(std::unique_ptr<Derived<Result(Argument),Internal>> ptr)	\
-	:MultistagePipe<Result(Argument)>(ptr->num_inputs(),ptr->num_outputs()),	\
-	 pipe(static_cast<Pipeline<Result(Argument)>*>(ptr.release())){}	\
-public:																	\
-	static constexpr const char* name=#PipeName;						\
-	Result operator()(Argument&& arg) const override{					\
-		return (*pipe)(std::move(arg));									\
-	}																	\
-	static bool matches(const std::string& label){						\
-		return (label.compare(name)==0);								\
-	}																	\
-	static std::unique_ptr<MultistagePipe<Result(Argument)>> 			\
-	deserialize(std::istream &is);										\
-	std::unique_ptr<Pipeline<Result(Argument)>> clone() const override{	\
-		return std::unique_ptr<Pipeline<Result(Argument)>>(new PipeName(pipe->clone())); \
-	}																	\
-	void serialize(std::ostream& os) const override final{				\
-		os << name << std::endl;										\
-		pipe->serialize(os);											\
-	}																	\
-	friend struct Factory<PipeName>;									\
-	PipeName() = delete;												\
-	virtual size_t num_inputs() const override{							\
-		return pipe->internal_num_inputs();								\
-	}																	\
-};																		\
-struct PipeName##_Registrar{											\
-	PipeName##_Registrar(){												\
-		ensemble::PredicatedFactory<MultistagePipe<Result(Argument)>,const std::string&,std::istream&>	\
-		::registerPtr(&PipeName::matches,&PipeName::deserialize);		\
-	}																	\
-};
-//} PipeName##_registrar;
-
-#define MULTISTAGEPIPELINE_POST_FACTORY(PipeName)									\
-std::unique_ptr<MultistagePipe<PipeName::result_type(PipeName::argument_type)>> 	\
-PipeName::deserialize(std::istream &is){											\
-	return Factory<PipeName>::deserialize(is);										\
-}																					\
-PipeName##_Registrar PipeName##_registrar;
-
-#define MULTISTAGEPIPELINE_FACTORY_TYPEDEFS(PipeName)	\
-	typedef PipeName::argument_type Arg;				\
-	typedef PipeName::result_type Res;
-
-/*************************************************************************************************/
-
 namespace impl{
 
 /*************************************************************************************************/
@@ -216,7 +142,7 @@ typedef std::tuple<std::vector<double>, size_t> CtorTuple;
 
 	template<typename U = Internal, class = typename std::enable_if<!std::is_same<U, nullptr_t>::value>::type>
 	Scale(std::unique_ptr<U> wrap, double coeff, size_t numinputs=0)
-	:CRTPClass(std::move(wrap),wrap->num_outputs()),
+	:CRTPClass(std::move(wrap)),
 	 coeff_(1,coeff)
 	 {
 		if(numinputs) assert(numinputs == PipeBase::num_outputs()
@@ -378,7 +304,7 @@ typedef std::tuple<std::vector<double>, size_t> CtorTuple;
 
 	template<typename U = Internal, class = typename std::enable_if<!std::is_same<U, nullptr_t>::value>::type>
 	Offset(std::unique_ptr<U> wrap, double offset, size_t numinputs=0)
-	:CRTPClass(std::move(wrap),wrap->num_outputs()),
+	:CRTPClass(std::move(wrap)),
 	 offsets(1,offset)
 	 {
 		if(numinputs) assert(PipeBase::num_inputs()==numinputs);
@@ -982,7 +908,7 @@ protected:
 public:
 	template<typename U = Internal, class = typename std::enable_if<!std::is_same<U, nullptr_t>::value>::type>
 	Sum(std::unique_ptr<U> wrap, size_t numinputs=0)
-	:CRTPClass(std::move(wrap),wrap->num_outputs())
+	:CRTPClass(std::move(wrap),numinputs)
 	{
 		BaseClass::setOutputLen(1);
 		if(numinputs) assert(BaseClass::num_inputs() == numinputs);
@@ -1078,10 +1004,10 @@ private:
 
 	template<typename U = Internal, class = typename std::enable_if<!std::is_same<U, nullptr_t>::value>::type>
 	SVM(std::unique_ptr<U> wrap, SVMModel* svm, size_t numinputs=0)
-	:CRTPClass(std::move(wrap),wrap->num_outputs()),
+	:CRTPClass(std::move(wrap)),
 	 svm(svm)
 	{
-		if(numinputs && wrap->num_outputs()) assert(numinputs==wrap->num_outputs());
+		if(numinputs && BaseClass::num_outputs()) assert(numinputs==BaseClass::num_outputs());
 		BaseClass::setOutputLen(1);
 	}
 	template<typename U = Internal, class = typename std::enable_if<std::is_same<U, nullptr_t>::value>::type>
@@ -1100,10 +1026,10 @@ protected:
 public:
 	template<typename U = Internal, class = typename std::enable_if<!std::is_same<U, nullptr_t>::value>::type>
 	SVM(std::unique_ptr<U> wrap, std::unique_ptr<SVMModel> svm, size_t numinputs=0)
-	:CRTPClass(std::move(wrap),wrap->num_outputs()),
+	:CRTPClass(std::move(wrap)),
 	 svm(std::move(svm))
 	{
-		if(numinputs && wrap->num_outputs()) assert(numinputs==wrap->num_outputs());
+		if(numinputs && BaseClass::num_outputs()) assert(numinputs==BaseClass::num_outputs());
 		BaseClass::setOutputLen(1);
 	}
 	template<typename U = Internal, class = typename std::enable_if<std::is_same<U, nullptr_t>::value>::type>
@@ -1120,7 +1046,6 @@ public:
 	double process(Arg&& inputs) const override{
 		impl::SVM_predict<Arg> p;
 		return p(*svm,std::move(inputs));
-//		return impl::SVM_impl(*svm,std::move(inputs));
 	}
 
 	virtual ~SVM() = default;

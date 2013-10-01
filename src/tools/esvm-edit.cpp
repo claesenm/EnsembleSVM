@@ -29,6 +29,7 @@
 #include "pipeline/pipelines.hpp"
 #include "BinaryWorkflow.hpp"
 #include "LibSVM.hpp"
+#include "Executable.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -168,10 +169,10 @@ int main(int argc, char **argv)
 	multilinedesc.push_back("set the postprocessing aggregation scheme to use in the workflow");
 	multilinedesc.push_back("1 -- *  majority voting: f(x)=alpha*x / sum(alpha)");
 	multilinedesc.push_back("2 -- *  logistic regression: f(x)=1/(1+exp[-(alpha*x+b)])");
-	multilinedesc.push_back("3 -- ** LIBSVM model (binary classifier)");			// todo
-	multilinedesc.push_back("4 -- ** LIBLINEAR model (binary classifier)"); 		// todo
-	multilinedesc.push_back("*  final threshold automatically set to 0.5"); 			// todo
-	multilinedesc.push_back("** final threshold automatically set to 0.0"); 			// todo
+	multilinedesc.push_back("3 -- ** LIBSVM model (binary classifier)");
+	multilinedesc.push_back("4 -- ** LIBLINEAR model (binary classifier)");
+	multilinedesc.push_back("*  final threshold automatically set to 0.5");
+	multilinedesc.push_back("** final threshold automatically set to 0.0");
 	CLI::Argument<unsigned> post(multilinedesc,keyword,CLI::Argument<unsigned>::Content(1,0));
 	allargs.push_back(&post);
 	multilinedesc.clear();

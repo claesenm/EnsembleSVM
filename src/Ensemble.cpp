@@ -27,7 +27,6 @@
 #include "Util.hpp"
 #include "io.hpp"
 #include "config.h"
-#include "PredicatedFactory.hpp"
 #include <set>
 #include <cassert>
 #include <algorithm>
@@ -445,10 +444,6 @@ unsigned SVMEnsembleImpl::getSVindex(unsigned localidx, const SVMModel* const mo
  * ENSEMBLE FUNCTIONS
  */
 
-//unique_ptr<BinaryModel> SVMEnsembleImpl::deserialize(std::istream &iss){
-//	return unique_ptr<BinaryModel>(SVMEnsembleImpl::read(iss).release());
-//}
-
 unique_ptr<SVMEnsemble> SVMEnsembleImpl::read(std::istream &iss){
 
 	std::string key, line;
@@ -564,37 +559,6 @@ void SVMEnsembleImpl::serialize(std::ostream& os) const{
 //	return ensemble;
 //}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-} // ensemble namespace
-
-
-
-
-namespace ensemble{
-
 SVMEnsemble::iterator SVMEnsemble::begin(){
 	return iterator(pImpl->begin());
 }
@@ -685,48 +649,7 @@ std::string SVMEnsemble::negative_label() const{
 size_t SVMEnsemble::num_outputs() const{
 	return size();
 }
-//std::vector<double> SVMEnsemble::predict_by_cache(const std::vector<double>& cache) const{
-//
-//	// initialize voting map: <label, vote count>
-//	std::map<string,unsigned> votes;
-//	const SVMModel *firstmodel=models.begin()->first;
-//	for(unsigned i=0;i<firstmodel->getNumClasses();++i)
-//		votes.insert(std::make_pair(translate(firstmodel->getLabel(i)),0));
-//
-//	std::vector<double> decision_vals;
-//	decision_vals.reserve(size());
-//
-//	std::map<string,unsigned>::iterator Iv, Ev;
-//	for(const_iterator I=begin(),E=end();I!=E;++I){
-//		// make predictions with cached kernel evaluations
-//		unsigned modelsize=I->first->size();
-//		std::vector<double> kernelevals(modelsize,0);
-//
-//		for(unsigned idx=0;idx<modelsize;++idx){
-//			kernelevals[idx]=cache.at(getSVindex(idx+I->second));
-//		}
-//
-//		decision_vals.emplace_back(I->first->predict_by_cache(kernelevals));
-//	}
-//
-//	return std::move(decision_vals);
-//}
 
-//Prediction SVMEnsemble::decval2prediction(std::vector<double>&& decision_vals) const{
-//
-//	Prediction pred(size()+1);
-//	unsigned numpos = std::count_if(decision_vals.begin(),decision_vals.end(),
-//			[](double decval){ return decval > 0; });
-//	if(2*numpos > size()){
-//		pred.setLabel(positive_label());
-//		pred[0]=1.0*numpos/size();
-//	}else{
-//		pred[0]=1.0-1.0*numpos/size();
-//		pred.setLabel(negative_label());
-//	}
-//	std::copy(decision_vals.begin(),decision_vals.end(),pred.begin()+1);
-//	return std::move(pred);
-//}
 
 Prediction SVMEnsemble::predict(const SparseVector &x) const{
 	return pImpl->predict(x);
@@ -758,14 +681,8 @@ unsigned SVMEnsemble::getSVindex(unsigned localidx, const SVMModel* const mod) c
 }
 
 /**
- * IO FUNCTIONS
- */
-
-/**
  * ENSEMBLE FUNCTIONS
  */
-
-REGISTER_BINARYMODEL_CPP(SVMEnsemble)
 
 unique_ptr<BinaryModel> SVMEnsemble::deserialize(std::istream &iss){
 	return unique_ptr<BinaryModel>(SVMEnsemble::read(iss).release());

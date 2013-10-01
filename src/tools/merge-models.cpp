@@ -34,6 +34,7 @@
 #include "io.hpp"
 #include "LibSVM.hpp"
 #include "BinaryWorkflow.hpp"
+#include "Executable.hpp"
 #include <errno.h>
 
 using std::unique_ptr;

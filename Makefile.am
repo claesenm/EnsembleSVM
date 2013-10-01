@@ -35,7 +35,7 @@ endif
 
 pkginclude_HEADERS = include/CLI.hpp  include/DataFile.hpp  include/Ensemble.hpp  include/io.hpp  include/Kernel.hpp \
 	include/LibSVM.hpp  include/Models.hpp  include/SparseVector.hpp  include/Util.hpp include/ThreadPool.hpp \
-	include/Type2str.hpp include/PredicatedFactory.hpp include/BinaryWorkflow.hpp 
+	include/Type2str.hpp include/SelectiveFactory.hpp include/BinaryWorkflow.hpp include/Registration.hpp include/Executable.hpp
 
 pipeline_includedir = $(pkgincludedir)/pipeline
 pipeline_include_HEADERS = include/pipeline/core.hpp include/pipeline/blocks.hpp include/pipeline/pipelines.hpp
@@ -69,7 +69,7 @@ MAINTAINERCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
 
 # we include libsvm code in our shared library
 # to avoid problems with platforms that dont support double linking of libraries
-lib_LTLIBRARIES = lib/libensemblesvm.la 
+lib_LTLIBRARIES = lib/libensemblesvm.la
 
 dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp \
 	src/DataFile.cpp 		\
@@ -85,12 +85,10 @@ dist_lib_libensemblesvm_la_SOURCES = src/CLI.cpp \
 	
 nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp
 
-#nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h
-
 lib_libensemblesvm_la_LDFLAGS = -version-info $(SHLIBVER)
 
-TOOLS=bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data esvm-edit
-BINTOOLS=$(patsubst %,$(top_builddir)/bin/%,$(TOOLS))
+#TOOLS=bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data esvm-edit
+#BINTOOLS=$(patsubst %,$(top_builddir)/bin/%,$(TOOLS))
 
 bin_PROGRAMS=
 check_PROGRAMS=
@@ -136,10 +134,10 @@ __top_builddir__bin_esvm_edit_LDADD = $(BASELIBS)
 
 ## TEST BINARIES
 check_PROGRAMS += $(top_builddir)/tests/blocks
-__top_builddir__tests_blocks_SOURCES = src/tests/blocks.cpp
+__top_builddir__tests_blocks_SOURCES = src/tests/test_blocks.cpp
 __top_builddir__tests_blocks_LDADD = $(BASELIBS)
 check_PROGRAMS += $(top_builddir)/tests/pipelines
-__top_builddir__tests_pipelines_SOURCES = src/tests/pipelines.cpp
+__top_builddir__tests_pipelines_SOURCES = src/tests/test_pipelines.cpp
 __top_builddir__tests_pipelines_LDADD = $(BASELIBS)
 check_PROGRAMS += $(top_builddir)/tests/sparsevector
 __top_builddir__tests_sparsevector_SOURCES = src/tests/test_sparsevector.cpp

@@ -242,7 +242,7 @@ public:
 	virtual ~Pipeline(){};
 
 	virtual size_t num_inputs() const{ return input_len; }
-	inline size_t num_outputs() const{ return output_len; }
+	size_t num_outputs() const{ return output_len; }
 
 	// used by derived classes to denote the number of inputs at the start of the pipe
 	virtual size_t internal_num_inputs() const{ return num_inputs(); }
@@ -599,36 +599,6 @@ struct Factory<BB<Ret(Arg)>>{
 		getline(is,line);
 		return BB_CRTP<BB<Ret(Arg)>>::deserialize(is);
 	}
-};
-
-/*************************************************************************************************/
-
-template <typename T>
-class MultistagePipe;
-
-/**
- * Class used to model multistage pipelines. These pipelines can deserialize automatically.
- */
-template <typename Res, typename Arg>
-class MultistagePipe<Res(Arg)> : public Pipeline<Res(Arg)>{
-public:
-	MultistagePipe(size_t input_len, size_t output_len)
-	:Pipeline<Res(Arg)>(input_len,output_len)
-	{}
-
-	MultistagePipe(size_t input_len)
-	:Pipeline<Res(Arg)>(input_len)
-	{}
-
-	MultistagePipe(const MultistagePipe<Res(Arg)>& o)
-	:Pipeline<Res(Arg)>(o)
-	{}
-
-	MultistagePipe(MultistagePipe<Res(Arg)>&& o)
-	:Pipeline<Res(Arg)>(std::move(o))
-	{}
-
-	virtual ~MultistagePipe(){}
 };
 
 /*************************************************************************************************/

@@ -26,7 +26,6 @@
 #include "Ensemble.hpp"
 #include "io.hpp"
 #include "LibSVM.hpp"
-#include "PredicatedFactory.hpp"
 #include <cassert>
 #include <algorithm>
 #include <typeinfo>
@@ -182,7 +181,7 @@ std::ostream &operator<<(std::ostream &os, const BinaryModel &model){
 }
 
 std::unique_ptr<BinaryModel> BinaryModel::deserialize(std::istream& is){
-	typedef PredicatedFactory<BinaryModel,const std::string&,std::istream&> MetaFactory;
+	typedef SelectiveFactory<BinaryModel,const std::string&,std::istream&> MetaFactory;
 	std::string line;
 	getline(is,line);
 
@@ -458,78 +457,6 @@ std::ostream &operator<<(std::ostream &os, const SVMModel &model){
 	return os;
 }
 
-
-//void SVMModel::serialize(std::ostream& os) const{
-//	os.precision(PRECISION);
-//	std::ostringstream stream(std::ostringstream::out);
-//
-//	os << "SVMModel" << std::endl;
-//
-//	// if the model does not belong to an ensemble: print kernel properties
-//	if(model.ens == nullptr){
-//		os << INENSEMBLE_STR << " 0" << endl;
-//		os << *model.getKernel();
-//	}else{
-//		os << INENSEMBLE_STR << " 1" << endl;
-//	}
-//
-//	os << NRCLASS_STR << " " << model.getNumClasses() << endl;
-//	os << TOTALSV_STR << " " << model.size() << endl;
-//
-//	os << LABEL_STR;
-//	for(unsigned i=0;i<model.getNumClasses();++i)
-//		os << " " << model.getLabel(i);
-//	os << endl;
-//
-//	os << NRSV_STR;
-//	for(unsigned i=0;i<model.getNumClasses();++i)
-//		os << " " << model.getNumSV(i);
-//	os << endl;
-//
-//
-//	os << CONSTANTS_STR;
-//	unsigned k=model.getNumClasses();
-//	for(unsigned i=0;i<k*(k-1)/2;++i)
-//		os << " " << model.getConstant(i);
-//	os << endl;
-//
-//	os << SV_STR << std::endl;
-//
-//	std::list<SVMModel::const_weight_iter> iterators;
-//	for(unsigned i=0;i<model.getNumClasses()-1;++i)
-//		iterators.push_back(model.weight_begin(i));
-//
-//	if(model.ens==nullptr){
-//		// model does not belong to an ensemble, so print SVs in full
-//		// print rows of the following form (k classes):
-//		// <weight 1> <weight 2> ... <weight k-1> SV
-//		for(SVMModel::const_iterator I=model.begin(),E=model.end();I!=E;++I){
-//			// print out weights per 1v1 pair
-//			for(std::list<SVMModel::const_weight_iter>::iterator Iw=iterators.begin(),Ew=iterators.end();Iw!=Ew;++Iw){
-//				os << **Iw << " ";
-//				++*Iw;
-//			}
-//			// print out SV
-//			os << **I << endl;
-//		}
-//	}else{
-//		// model belongs to an ensemble
-//		// print rows of the following form (k classes):
-//		// <weight 1> <weight 2> ... <weight k-1> <index in ensemble SVs>
-//		for(unsigned i=0;i<model.size();++i){
-//			// print out weights per 1v1 pair
-//			for(std::list<SVMModel::const_weight_iter>::iterator Iw=iterators.begin(),Ew=iterators.end();Iw!=Ew;++Iw){
-//				os << **Iw << " ";
-//				++*Iw;
-//			}
-//			// print out SV
-//			os << model.ens->getSVindex(i,&model) << endl;
-//		}
-//	}
-//
-//	return os;
-//}
-
 void SVMModel::serialize(std::ostream& os) const{
 	std::ostringstream stream(std::ostringstream::out);
 
@@ -604,16 +531,6 @@ void SVMModel::serialize(std::ostream& os) const{
 unique_ptr<BinaryModel> SVMModel::deserialize(std::istream& is){
 	return std::unique_ptr<BinaryModel>(SVMModel::read(is).release());
 }
-
-REGISTER_BINARYMODEL_CPP(SVMModel)
-
-//bool SVMModel_Registrar::matches(const std::string& str){
-//	return str.compare(SVMModel::NAME)==0;
-//}
-//SVMModel_Registrar::SVMModel_Registrar(){
-//		PredicatedFactory<BinaryModel,const std::string&,std::istream&>::registerPtr(&SVMModel_Registrar::matches,&SVMModel::deserialize);
-//}
-//SVMModel_Registrar SVMModel_registrar;
 
 unique_ptr<SVMModel> SVMModel::read(std::istream &is, SVMEnsemble *ens){
 
