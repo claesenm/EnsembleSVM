@@ -1,0 +1,32 @@
+#!/bin/sh
+
+echo "Testing dummy-generator tool".
+bin/dummy-generator -data ${srcdir}/tests/test_dummy-generator_input.txt -o tests/dummies.txt -cols 2 3 4 -save tests/reference.txt -delim ,
+
+# compare the produced dummies file
+cp ${srcdir}/tests/test_dummy-generator_dummies.txt tests/test_dummy-generator_dummies.txt
+sed -i -e '$a\' tests/test_dummy-generator_dummies.txt
+sed -i -e '$a\' tests/dummies.txt
+diff --brief tests/dummies.txt tests/test_dummy-generator_dummies.txt
+comp_value=$?
+
+if [ $comp_value -eq 1 ]
+then 
+	exit $comp_value
+fi
+
+# compare the produced reference file
+cp ${srcdir}/tests/test_dummy-generator_reference.txt tests/test_dummy-generator_reference.txt
+sed -i -e '$a\' tests/test_dummy-generator_reference.txt
+sed -i -e '$a\' tests/reference.txt
+diff --brief tests/reference.txt tests/test_dummy-generator_reference.txt
+comp_value=$?
+
+if [ $comp_value -eq 1 ]
+then 
+	exit $comp_value
+fi
+
+# clean up
+rm -f tests/dummies.txt tests/test_dummy-generator_dummies.txt
+rm -f tests/reference.txt tests/test_dummy-generator_reference.txt

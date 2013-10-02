@@ -1,0 +1,19 @@
+#!/bin/sh
+
+echo "Testing sparse tool".
+bin/sparse -data ${srcdir}/tests/test_sparse_input.txt -o tests/sparse.txt -delim , -labeled
+
+# compare the produced sparse file
+cp ${srcdir}/tests/test_sparse_output1.txt tests/test_sparse_output.txt
+sed -i -e '$a\' tests/test_sparse_output.txt
+sed -i -e '$a\' tests/sparse.txt
+diff --brief tests/sparse.txt tests/test_sparse_output.txt
+comp_value=$?
+
+if [ $comp_value -eq 1 ]
+then 
+	exit $comp_value
+fi
+
+# clean up
+rm -f tests/sparse.txt tests/test_sparse_output.txt
