@@ -51,6 +51,9 @@ namespace ensemble{
  * Since Predicates are user-defined, several derived classes may fit a given Criterion.
  * Therefore a SelectiveFactory can, in principle, return a collection of
  * constructed Base objects.
+ *
+ * Note that this implementation is not thread safe, but it's easy to fix that by adding a mutex
+ * to container().
  */
 template <	typename Base,		// the base class for instantiations
 			typename Criterion,	// selection criterion for factories
@@ -74,28 +77,18 @@ private:
 	 *
 	 * Wrapped inside a function to avoid the static
 	 * initialization order fiasco.
+	 *
+	 * This is the Construct On First Use idiom.
 	 */
-	static FunctionContainer* container(){
-		static FunctionContainer *cont=new FunctionContainer;
+	static FunctionContainer& container(){
+		static FunctionContainer cont=FunctionContainer();
 		return cont;
 	}
-
-	/**
-	 * Used to delete the internal container on program exit.
-	 *
-	 * Without this deleter there is a leak (negligable, but it's there).
-	 */
-	class Deleter{
-		~Deleter(){
-			delete container();
-		}
-	};
-	static Deleter deleter;
 
 public:
 
 	/**
-	 * This is a purely static class. No objects can be made.
+	 * This is a purely static class. No objects should be made.
 	 */
 	SelectiveFactory() = delete;
 
@@ -103,7 +96,7 @@ public:
 	 * Registers a new factory with given selection predicate.
 	 */
 	static void registerPtr(Predicate predicate, Factory factory){
-		container()->insert(std::make_pair(predicate,factory));
+		container().insert(std::make_pair(predicate,factory));
 	}
 
 	/**
@@ -112,7 +105,7 @@ public:
 	 */
 	static std::vector<std::unique_ptr<Base>> Produce(Criterion criterion, Input... value){
 		std::vector<std::unique_ptr<Base>> result;
-		for(auto& f: *container()){
+		for(auto& f: container()){
 			if((f.first)(criterion)){
 				result.emplace_back((f.second)(value...));
 			}
@@ -123,11 +116,8 @@ public:
 	/**
 	 * Returns the amount of factories currently registered.
 	 */
-	static size_t size(){ return container()->size(); }
+	static size_t size(){ return container().size(); }
 };
-
-template <typename Base, typename Criterion, typename... Input>
-typename SelectiveFactory<Base,Criterion,Input...>::Deleter SelectiveFactory<Base,Criterion,Input...>::deleter;
 
 /*************************************************************************************************/
 
