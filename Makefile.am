@@ -1,8 +1,6 @@
 # @configure_input@
 
 
-SUBDIRS = #include src/tools src #lib objects #src src/tools bin objects includes lib
-
 #########################
 # COMPILATION FLAGS ETC #
 #########################
@@ -87,9 +85,6 @@ nodist_lib_libensemblesvm_la_SOURCES = src/libsvm/svm.cpp
 
 lib_libensemblesvm_la_LDFLAGS = -version-info $(SHLIBVER)
 
-#TOOLS=bootstrap cross-validate dummy-generator esvm-predict esvm-train merge-models sparse split-data esvm-edit
-#BINTOOLS=$(patsubst %,$(top_builddir)/bin/%,$(TOOLS))
-
 bin_PROGRAMS=
 check_PROGRAMS=
 
@@ -154,3 +149,9 @@ __top_builddir__tests_workflow_LDADD = $(BASELIBS)
 
 # http://www.gnu.org/software/automake/manual/html_node/Scripts_002dbased-Testsuites.html#Scripts_002dbased-Testsuites
 TESTS=$(check_PROGRAMS)
+
+# check_PROGRAMS += $(top_builddir)/tests/dummy-generator.test
+TESTS+=$(top_builddir)/tests/dummy-generator.test
+EXTRA_DIST+=tests/dummy-generator.test tests/test_dummy-generator_input.txt tests/test_dummy-generator_dummies.txt tests/test_dummy-generator_reference.txt
+TESTS+=$(top_builddir)/tests/sparse.test
+EXTRA_DIST+=tests/sparse.test tests/test_sparse_input.txt tests/test_sparse_output.txt

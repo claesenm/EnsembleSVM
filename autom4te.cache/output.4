@@ -2436,7 +2436,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-#AM_INIT_AUTOMAKE([foreign 1.5 no-define dist-bzip2 -Wall -Wno-portability subdir-objects tar-ustar])
 am__api_version='1.11'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -2991,17 +2990,6 @@ $as_echo "$am_cv_prog_tar_ustar" >&6; }
 #####
 # BASIC CONFIGURATION
 #####
-#AC_CHECK_LIB([blas],[sdot_],
-#	LIBS="-lblas $LIBS"
-#	AC_DEFINE(HAVE_BLAS,1,[Comment this line to disable BLAS use.])
-#	AM_CONDITIONAL(BLAS_AVAILABLE,true,[BLAS is available]),
-#	AM_CONDITIONAL(BLAS_AVAILABLE,false,[BLAS is not available]))	
-
-#AC_CHECK_LIB([lapack],[dgels_],
-#	LIBS="-llapack $LIBS"
-#	AC_DEFINE(HAVE_LIBLAPACK,1,[Comment this line to disable BLAS use.])
-#	AM_CONDITIONAL(LAPACK_AVAILABLE,true,[LAPACK is available]),
-#	AM_CONDITIONAL(LAPACK_AVAILABLE,false,[LAPACK is not available]))
 
 # location of prepackaged libsvm
 DEFAULT_LIBSVM_DIR=libsvm-weights-3.17
@@ -11579,8 +11567,6 @@ CC="$lt_save_CC"
 
 # Only expand once:
 
-
-#AC_LIBOBJ
 
 
 # Checks for programs.

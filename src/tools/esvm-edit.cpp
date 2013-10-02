@@ -81,6 +81,45 @@ std::pair<std::vector<double>,double> readLIBLINEAR(const std::string& fname){
 	return std::move(p);
 }
 
+std::unique_ptr<pipeline::NormalizeLinear> readSVMScale(const std::string& fname){
+	std::ifstream file(fname);
+	std::string line;
+
+	// discard lines up to and including 'x'
+	for(std::string junkline; getline(file,junkline);){
+		if(junkline.compare("x")==0) break;
+	}
+
+	// second line contains limits
+	getline(file,line);
+	std::istringstream iss(line);
+	double upper, lower;
+	iss >> lower;
+	iss >> upper;
+
+	std::vector<double> scale_coeffs, offset_coeffs;
+	size_t svidx=1, current_sv;
+	double min, max, range=upper-lower, scale;
+	for(std::string svline; getline(file,svline); svidx++){
+		iss.clear();
+		iss.str(svline);
+
+		iss >> current_sv;
+		assert(current_sv == svidx && "Input dimension missing in scale coefficients.");
+
+		iss >> min;
+		iss >> max;
+		assert(max!=min && "Input dimension has constant value.");
+
+		scale=range/(max-min);
+		scale_coeffs.push_back(scale);
+		offset_coeffs.push_back(lower-min*scale);
+	}
+
+	pipeline::Factory<pipeline::NormalizeLinear> f;
+	return f(std::move(scale_coeffs),std::move(offset_coeffs));
+}
+
 /**
  * Reads the content of fname into the resulting vector.
  *
@@ -263,7 +302,9 @@ int main(int argc, char **argv)
 	// include preprocessing if specified
 
 	if(preprocessing.configured()){
-		// todo
+		auto normlin = readSVMScale(preprocessing[0]);
+		std::unique_ptr<BinaryWorkflow::Preprocessing> preproc(normlin.release());
+		flow->set_preprocessing(std::move(preproc));
 		modified=true;
 	}
 

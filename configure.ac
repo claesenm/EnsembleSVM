@@ -5,23 +5,11 @@ AC_INIT([EnsembleSVM], [2.0], [marc.claesen@esat.kuleuven.be],[ensemblesvm],[htt
 AC_CONFIG_SRCDIR([src/CLI.cpp])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
-#AM_INIT_AUTOMAKE([foreign 1.5 no-define dist-bzip2 -Wall -Wno-portability subdir-objects tar-ustar])
 AM_INIT_AUTOMAKE([foreign no-define dist-bzip2 -Wall -Wno-portability subdir-objects 1.9 tar-ustar])
 
 #####
 # BASIC CONFIGURATION
 #####
-#AC_CHECK_LIB([blas],[sdot_],
-#	LIBS="-lblas $LIBS"
-#	AC_DEFINE(HAVE_BLAS,1,[Comment this line to disable BLAS use.])
-#	AM_CONDITIONAL(BLAS_AVAILABLE,true,[BLAS is available]),
-#	AM_CONDITIONAL(BLAS_AVAILABLE,false,[BLAS is not available]))	
-
-#AC_CHECK_LIB([lapack],[dgels_],
-#	LIBS="-llapack $LIBS"
-#	AC_DEFINE(HAVE_LIBLAPACK,1,[Comment this line to disable BLAS use.])
-#	AM_CONDITIONAL(LAPACK_AVAILABLE,true,[LAPACK is available]),
-#	AM_CONDITIONAL(LAPACK_AVAILABLE,false,[LAPACK is not available]))
 
 # location of prepackaged libsvm
 AC_SUBST([DEFAULT_LIBSVM_DIR],[libsvm-weights-3.17])
@@ -36,8 +24,6 @@ AC_SUBST([PACKAGE_VERSION])
 # LIBTOOL STUFF
 ####
 LT_INIT
-#AC_LIBOBJ
-
 
 # Checks for programs.
 AC_PROG_CC

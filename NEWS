@@ -1,5 +1,13 @@
 EnsembleSVM NEWS - User visible changes.
 
+* 2.0: Updated the entire code base to C++11. Library ABI and API changed significantly.
+	Added support for parallelization in training and prediction tools, resulting in a 3-fold speed increase in our quad-core benchmarks.
+	Added a full programming framework for fast prototyping of aggregation schemes and included several options for aggregation, both linear and nonlinear.
+	Added the 'esvm-edit' tool, which allows intuitive manipulation of ensemble models.
+	Added unit tests for the main classes, enabled via make check.
+	Modified the core class, SVMEnsemble, to use a pointer-to-implementation; which allows us to implement future modifications without ABI changes.	 
+	Various bug fixes and minor tweaks.	
+
 * 1.1: Removed deprecated command line argument related to cross-validation from split-data tool. 
 			 Library API and ABI remain unchanged.
 

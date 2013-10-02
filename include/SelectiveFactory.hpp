@@ -40,13 +40,13 @@ namespace ensemble{
 // http://stackoverflow.com/questions/9831501/how-can-i-have-multiple-parameter-packs-in-a-variadic-template
 
 /**
- * A meta-factory which forwards the input to a matching Base factory,
+ * A monostate meta-factory which forwards the input to a matching Base factory,
  * based on the given Criterion. A SelectiveFactory can generically instantiate
  * whatever derived class can be constructed that fits Criterion.
  *
  * The key advantage to this factory is that candidate constructors can be registered
  * from anywhere, for example using a global prior to main(). This works because the factory
- * is completely static. This allows registration to occur in library code.
+ * is a monostate, which allows registration to occur in library code if desired.
  *
  * Since Predicates are user-defined, several derived classes may fit a given Criterion.
  * Therefore a SelectiveFactory can, in principle, return a collection of
@@ -88,7 +88,7 @@ private:
 public:
 
 	/**
-	 * This is a purely static class. No objects should be made.
+	 * This is a monostate. No objects should be made.
 	 */
 	SelectiveFactory() = delete;
 

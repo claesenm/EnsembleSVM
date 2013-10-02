@@ -37,6 +37,7 @@
 #include <type_traits>
 #include <sstream>
 #include "Type2str.hpp"
+#include "SparseVector.hpp"
 
 /*************************************************************************************************/
 
@@ -75,6 +76,12 @@ template<>
 bool check_size(const unsigned& t, size_t size){
 	return size==1;
 }
+
+template<>
+bool check_size(const ensemble::SparseVector&sv, size_t size){
+	return sv.size() <= size;
+}
+
 
 } // anonymous namespace
 
