@@ -157,8 +157,8 @@ __top_builddir__tests_workflow_LDADD = $(BASELIBS)
 # http://www.gnu.org/software/automake/manual/html_node/Scripts_002dbased-Testsuites.html#Scripts_002dbased-Testsuites
 TESTS=$(check_PROGRAMS)
 
-# check_PROGRAMS += $(top_builddir)/tests/dummy-generator.test
 TESTS+=$(top_builddir)/tests/dummy-generator.test
 EXTRA_DIST+=tests/dummy-generator.test tests/test_dummy-generator_input.txt tests/test_dummy-generator_dummies.txt tests/test_dummy-generator_reference.txt
+
 TESTS+=$(top_builddir)/tests/sparse.test
 EXTRA_DIST+=tests/sparse.test tests/test_sparse_input.txt tests/test_sparse_output.txt
