@@ -1,5 +1,11 @@
 # @configure_input@
 
+# todo: why doesn't this work?
+SUBDIRS = .
+if ENABLE_DOXYGEN
+	SUBDIRS += doc/
+endif
+#SUBDIRS = . doc
 
 #########################
 # COMPILATION FLAGS ETC #
@@ -18,7 +24,8 @@ AM_CPPFLAGS =-I$(top_srcdir)/include -I$(top_builddir)/src/libsvm -ffast-math
 # DISTRIBUTION #
 ################
 
-EXTRA_DIST = doxygen.cfg COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp $(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT boost include/any_iterator
+EXTRA_DIST = doxygen.cfg doc/doxygen.cfg.in doc/Makefile.am COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp \
+	$(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT boost include/any_iterator
 
 #####################
 # AUTOTOOLS SCRIPTS #

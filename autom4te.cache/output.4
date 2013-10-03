@@ -643,7 +643,8 @@ HAVE_CXX11
 DEFAULT_LIBSVM_PATH_FALSE
 DEFAULT_LIBSVM_PATH_TRUE
 LIBSVMPATH
-USE_DOXYGEN
+ENABLE_DOXYGEN_FALSE
+ENABLE_DOXYGEN_TRUE
 DEBUG_FALSE
 DEBUG_TRUE
 COMPILING_ON_DARWIN_FALSE
@@ -1421,7 +1422,7 @@ Optional Features:
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-debug          turn on debugging
-  --enable-code-doc       compiles html/pdf code docs using doxygen
+  --enable-doxygen        compiles html/pdf code docs using doxygen
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -16299,6 +16300,10 @@ else
 fi
 
 
+######
+# DOXYGEN SUPPORT
+######
+
 @%:@ Check whether --enable-doxygen was given.
 if test "${enable_doxygen+set}" = set; then :
   enableval=$enable_doxygen; 
@@ -16310,7 +16315,21 @@ else
 
 fi
 
+#AC_SUBST(USE_DOXYGEN)
+ if test x$USE_DOXYGEN = x1; then
+  ENABLE_DOXYGEN_TRUE=
+  ENABLE_DOXYGEN_FALSE='#'
+else
+  ENABLE_DOXYGEN_TRUE='#'
+  ENABLE_DOXYGEN_FALSE=
+fi
 
+
+
+
+#if test -z "$DOXYGEN"; then
+#	AM_COND_IF([ENABLE_DOXYGEN], AC_MSG_FAILURE([doxygen enabled via configure options but not found on system])
+#fi
 
 # Declare precious variables
 
@@ -16324,10 +16343,6 @@ fi
 
 if test -z "$LIBSVMPATH"; then
 	LIBSVMPATH=$DEFAULT_LIBSVM_DIR
-fi
-
-if test -z "$CXXFLAGS"; then
-	CXXFLAGS=-O2
 fi
 
 # Checks for library functions.
@@ -16931,9 +16946,10 @@ CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 CC="$PTHREAD_CC"
 
+
 ac_config_headers="$ac_config_headers config.h"
 
-ac_config_files="$ac_config_files Makefile"
+ac_config_files="$ac_config_files Makefile doc/Makefile"
 
 
 # http://www.sourceware.org/autobook/autobook/autobook_86.html#SEC86
@@ -17081,6 +17097,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${DEBUG_TRUE}" && test -z "${DEBUG_FALSE}"; then
   as_fn_error $? "conditional \"DEBUG\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_DOXYGEN_TRUE}" && test -z "${ENABLE_DOXYGEN_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_DOXYGEN\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${DEFAULT_LIBSVM_PATH_TRUE}" && test -z "${DEFAULT_LIBSVM_PATH_FALSE}"; then
@@ -18059,6 +18079,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

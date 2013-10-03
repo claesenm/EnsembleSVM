@@ -57,7 +57,11 @@ AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [turn on debugging]),
 esac],[debug=false])
 AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
 
-AC_ARG_ENABLE([doxygen], AS_HELP_STRING([--enable-code-doc], [compiles html/pdf code docs using doxygen]),
+######
+# DOXYGEN SUPPORT
+######
+
+AC_ARG_ENABLE([doxygen], AS_HELP_STRING([--enable-doxygen], [compiles html/pdf code docs using doxygen]),
 [
 	dnl action if present
 	USE_DOXYGEN=1
@@ -65,7 +69,18 @@ AC_ARG_ENABLE([doxygen], AS_HELP_STRING([--enable-code-doc], [compiles html/pdf 
 	dnl action if not present
 	USE_DOXYGEN=0
 ])
-AC_SUBST(USE_DOXYGEN)
+AM_CONDITIONAL([ENABLE_DOXYGEN], [test x$USE_DOXYGEN = x1])
+
+# Doxygen support, fixme broken on windows
+# http://chris-miceli.blogspot.be/2011/01/integrating-doxygen-with-autotools.html
+AC_CHECK_PROGS([DOXYGEN], [doxygen], [])
+AM_CONDITIONAL([HAVE_DOXYGEN],[test -n "$DOXYGEN"])
+AM_COND_IF([HAVE_DOXYGEN], 
+	[AC_CONFIG_FILES([doc/doxygen.cfg doc/Makefile])],
+	[AM_COND_IF([ENABLE_DOXYGEN], [AC_MSG_ERROR([doxygen enabled via configure options but not found on system])])]
+	)
+
+#[AC_CONFIG_FILES([doc/doxygen.cfg doc/Makefile])],
 
 # Declare precious variables
 AC_ARG_VAR(LIBSVMPATH,[absolute path to custom LIBSVM folder])
@@ -74,23 +89,32 @@ if test -z "$LIBSVMPATH"; then
 	LIBSVMPATH=$DEFAULT_LIBSVM_DIR
 fi
 
-if test -z "$CXXFLAGS"; then
-	CXXFLAGS=-O2
-fi
-
 # Checks for library functions.
 AC_CHECK_FUNCS([pow exp setlocale sqrt strdup strrchr strtol strtoul])
 
+# check for C++11 support
 AX_CXX_COMPILE_STDCXX_11([],mandatory)
-AX_PTHREAD
 
+#####
+# THREADING SUPPORT
+#####
+
+AC_ARG_ENABLE([threads], AS_HELP_STRING([--disable-threads], [disable multithreading in the library]),
+	[],
+	[USE_THREADS=1])
+AM_CONDITIONAL([ENABLE_THREADS], [test x$USE_THREADS = x1])
+AM_COND_IF([ENABLE_THREADS],[AX_PTHREAD])
+
+#AX_PTHREAD
 LIBS="$PTHREAD_LIBS $LIBS"
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 CC="$PTHREAD_CC"
 
+
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
+#AC_CONFIG_FILES([Makefile doc/doxygen.cfg doc/Makefile])
 
 # http://www.sourceware.org/autobook/autobook/autobook_86.html#SEC86
 Xsed="sed -e s/^X//"
