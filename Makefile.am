@@ -24,7 +24,7 @@ AM_CPPFLAGS =-I$(top_srcdir)/include -I$(top_builddir)/src/libsvm -ffast-math
 # DISTRIBUTION #
 ################
 
-EXTRA_DIST = doxygen.cfg doc/doxygen.cfg.in doc/Makefile.am COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp \
+EXTRA_DIST = doc/doxygen.cfg.in doc/Makefile.in COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp \
 	$(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT boost include/any_iterator
 
 #####################
@@ -69,7 +69,7 @@ src/libsvm/svm.h: $(ABS_PATH_TO_LIBSVM)/svm.h
 # clean up at all times and rebuild at all times
 BUILT_SOURCES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
 CLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
-DISTCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
+DISTCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT doc/Makefile doc/doxygen.cfg
 MAINTAINERCLEANFILES = src/libsvm/svm.cpp src/libsvm/svm.h src/libsvm/COPYRIGHT
 
 # we include libsvm code in our shared library
