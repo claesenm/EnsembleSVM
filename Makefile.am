@@ -158,7 +158,8 @@ __top_builddir__tests_workflow_LDADD = $(BASELIBS)
 TESTS=$(check_PROGRAMS)
 
 TESTS+=$(top_builddir)/tests/dummy-generator.test
-EXTRA_DIST+=tests/dummy-generator.test tests/test_dummy-generator_input.txt tests/test_dummy-generator_dummies.txt tests/test_dummy-generator_reference.txt
+EXTRA_DIST+=$(top_srcdir)/tests/dummy-generator.test $(top_srcdir)/tests/test_dummy-generator_input.txt \
+	$(top_srcdir)/tests/test_dummy-generator_dummies.txt $(top_srcdir)/tests/test_dummy-generator_reference.txt
 
 TESTS+=$(top_builddir)/tests/sparse.test
-EXTRA_DIST+=tests/sparse.test tests/test_sparse_input.txt tests/test_sparse_output.txt
+EXTRA_DIST+=$(top_srcdir)/tests/sparse.test $(top_srcdir)/tests/test_sparse_input.txt $(top_srcdir)/tests/test_sparse_output.txt
