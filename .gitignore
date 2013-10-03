@@ -1,4 +1,6 @@
 .*
 *~
 Makefile
+doxygen.cfg
+doxygen.cfg.stamp
 !/.gitignore
