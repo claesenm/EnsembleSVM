@@ -16599,8 +16599,6 @@ $as_echo "#define HAVE_CXX11 1" >>confdefs.h
 # THREADING SUPPORT
 #####
 
-# Extra flags
-
 # Check whether --enable-threads was given.
 if test "${enable_threads+set}" = set; then :
   enableval=$enable_threads;

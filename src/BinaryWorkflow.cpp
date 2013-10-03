@@ -161,7 +161,14 @@ std::vector<double> BinaryWorkflow::decision_value(const SparseVector &i) const{
 	Vector result(1,0.0);
 	result.reserve(intermediate.size()+1);
 	std::copy(intermediate.begin(),intermediate.end(),std::back_inserter(result));
-	result[0] = Helper<Postprocessing>::eval(postprocessing,std::move(intermediate));
+
+	if(postprocessing.get())
+		result[0] = Helper<Postprocessing>::eval(postprocessing,std::move(intermediate));
+	else{
+		assert(predictor->num_outputs()==1 &&
+				"No postprocessing included even though aggregation is required.");
+		result[0] = intermediate[0];
+	}
 	return std::move(result);
 }
 std::vector<double> BinaryWorkflow::decision_value(const std::vector<double> &i) const{
