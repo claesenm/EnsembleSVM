@@ -231,6 +231,7 @@ int main(int argc, char **argv)
 	multilinedesc.push_back("1 -- polynomial: (gamma*u'*v + coef0)^degree");
 	multilinedesc.push_back("2 -- radial basis function: exp(-gamma*|u-v|^2)");
 	multilinedesc.push_back("3 -- sigmoid: tanh(gamma*u'*v + coef0)");
+	multilinedesc.push_back("4 -- precomputed: data file row = <label> <kernel row>");
 	CLI::Argument<unsigned> kfun(multilinedesc,keyword,CLI::Argument<unsigned>::Content(1,2));
 	allargs.push_back(&kfun);
 	multilinedesc.clear();
@@ -452,13 +453,21 @@ int main(int argc, char **argv)
 
 		if(penfile.configured()){
 
+//			problem=LibSVM::construct_BSVM_problem(mgr.getKernel(), 1, 1,
+//					libsvmcache, bsdata, bslabels, bspenalties, bootstrapidx.size());
+
 			problem=LibSVM::construct_BSVM_problem(mgr.getKernel(), 1, 1,
-					libsvmcache, bsdata, bslabels,	bspenalties, bootstrapidx.size());
+					libsvmcache, bsdata, bslabels, bspenalties, std::vector<unsigned>(bootstrapidx.begin(),bootstrapidx.end()));
+
 
 		}else{
 
+//			problem=LibSVM::construct_BSVM_problem(mgr.getKernel(), pospen[0],negpen[0],
+//					libsvmcache, bsdata, bslabels,	bspenalties, bootstrapidx.size());
+
 			problem=LibSVM::construct_BSVM_problem(mgr.getKernel(), pospen[0],negpen[0],
-					libsvmcache, bsdata, bslabels,	bspenalties, bootstrapidx.size());
+					libsvmcache, bsdata, bslabels,	bspenalties, std::vector<unsigned>(bootstrapidx.begin(),bootstrapidx.end()));
+
 		}
 
 

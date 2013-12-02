@@ -222,7 +222,7 @@ bool SigmoidKernel::operator==(const Kernel &other) const{
 	return operator==(*casted);
 }
 
-// PRECOMPUTED KERNEL // todo
+// PRECOMPUTED KERNEL
 UserdefKernel::UserdefKernel():Kernel(KERNEL_TYPES::USERDEF){}
 UserdefKernel::UserdefKernel(const UserdefKernel &orig):Kernel(KERNEL_TYPES::USERDEF){}
 UserdefKernel::~UserdefKernel(){}
@@ -232,13 +232,16 @@ unique_ptr<Kernel> UserdefKernel::clone() const{
 	return ptr;
 }
 double UserdefKernel::k_function(const SparseVector *x, const SparseVector *y) const{
-	return 0; // todo
+	assert(x->size()==1);
+	return y->operator [](x->begin()->second);
 }
 double UserdefKernel::k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const{
-	return 0; // todo
+	assert(std::distance(Ix,Ex)==1);
+	assert(std::distance(Iy,Ey) > *Ix);
+	return *(Iy+*Ix);
 }
 bool UserdefKernel::operator==(const UserdefKernel &other) const{
-	return false; // todo
+	return true; // fixme
 }
 bool UserdefKernel::operator==(const Kernel &other) const{
 	if(!Kernel::operator ==(other))
@@ -248,7 +251,6 @@ bool UserdefKernel::operator==(const Kernel &other) const{
 	return operator==(*casted);
 }
 
-// todo
 unique_ptr<Kernel> KernelFactory(unsigned kfun, unsigned degree, double gamma, double coef0){
 	switch(kfun){
 	case KERNEL_TYPES::LINEAR:
@@ -269,7 +271,7 @@ unique_ptr<Kernel> KernelFactory(unsigned kfun, unsigned degree, double gamma, d
 	}
 	case KERNEL_TYPES::USERDEF:
 	{
-		break; // todo
+		return unique_ptr<Kernel>(new UserdefKernel());
 	}
 	default:
 	{
@@ -464,11 +466,10 @@ unique_ptr<SigmoidKernel> SigmoidKernel::read(std::istream &is){
 // UserdefKernel
 //todo
 void UserdefKernel::print(std::ostream &os) const{
-	// todo
+	Kernel::print(os);
 }
 unique_ptr<UserdefKernel> UserdefKernel::read(std::istream &is){
-	unique_ptr<UserdefKernel> ptr(nullptr); // todo
-	return ptr;
+	return unique_ptr<UserdefKernel>(new UserdefKernel); // nothing to read
 }
 
 

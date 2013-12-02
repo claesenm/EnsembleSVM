@@ -69,7 +69,8 @@ check_PROGRAMS = $(top_builddir)/tests/blocks$(EXEEXT) \
 	$(top_builddir)/tests/sparsevector$(EXEEXT) \
 	$(top_builddir)/tests/svmmodel$(EXEEXT) \
 	$(top_builddir)/tests/svmensemble$(EXEEXT) \
-	$(top_builddir)/tests/workflow$(EXEEXT)
+	$(top_builddir)/tests/workflow$(EXEEXT) \
+	$(top_builddir)/tests/userdefkernel$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) \
 	$(anyiter_detail_include_HEADERS) $(anyiter_include_HEADERS) \
@@ -208,6 +209,11 @@ am___top_builddir__tests_svmmodel_OBJECTS =  \
 __top_builddir__tests_svmmodel_OBJECTS =  \
 	$(am___top_builddir__tests_svmmodel_OBJECTS)
 __top_builddir__tests_svmmodel_DEPENDENCIES = $(BASELIBS)
+am___top_builddir__tests_userdefkernel_OBJECTS =  \
+	src/tests/test_userdefkernel.$(OBJEXT)
+__top_builddir__tests_userdefkernel_OBJECTS =  \
+	$(am___top_builddir__tests_userdefkernel_OBJECTS)
+__top_builddir__tests_userdefkernel_DEPENDENCIES = $(BASELIBS)
 am___top_builddir__tests_workflow_OBJECTS =  \
 	src/tests/test_workflow.$(OBJEXT)
 __top_builddir__tests_workflow_OBJECTS =  \
@@ -242,6 +248,7 @@ SOURCES = $(dist_lib_libensemblesvm_la_SOURCES) \
 	$(__top_builddir__tests_sparsevector_SOURCES) \
 	$(__top_builddir__tests_svmensemble_SOURCES) \
 	$(__top_builddir__tests_svmmodel_SOURCES) \
+	$(__top_builddir__tests_userdefkernel_SOURCES) \
 	$(__top_builddir__tests_workflow_SOURCES)
 DIST_SOURCES = $(dist_lib_libensemblesvm_la_SOURCES) \
 	$(__top_builddir__bin_bootstrap_SOURCES) \
@@ -258,6 +265,7 @@ DIST_SOURCES = $(dist_lib_libensemblesvm_la_SOURCES) \
 	$(__top_builddir__tests_sparsevector_SOURCES) \
 	$(__top_builddir__tests_svmensemble_SOURCES) \
 	$(__top_builddir__tests_svmmodel_SOURCES) \
+	$(__top_builddir__tests_userdefkernel_SOURCES) \
 	$(__top_builddir__tests_workflow_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
@@ -554,6 +562,8 @@ __top_builddir__tests_svmensemble_SOURCES = src/tests/test_svmensemble.cpp
 __top_builddir__tests_svmensemble_LDADD = $(BASELIBS)
 __top_builddir__tests_workflow_SOURCES = src/tests/test_workflow.cpp
 __top_builddir__tests_workflow_LDADD = $(BASELIBS)
+__top_builddir__tests_userdefkernel_SOURCES = src/tests/test_userdefkernel.cpp
+__top_builddir__tests_userdefkernel_LDADD = $(BASELIBS)
 
 # http://www.gnu.org/software/automake/manual/html_node/Scripts_002dbased-Testsuites.html#Scripts_002dbased-Testsuites
 TESTS = $(check_PROGRAMS) $(top_builddir)/tests/dummy-generator.test \
@@ -825,6 +835,11 @@ src/tests/test_svmmodel.$(OBJEXT): src/tests/$(am__dirstamp) \
 $(top_builddir)/tests/svmmodel$(EXEEXT): $(__top_builddir__tests_svmmodel_OBJECTS) $(__top_builddir__tests_svmmodel_DEPENDENCIES) $(EXTRA___top_builddir__tests_svmmodel_DEPENDENCIES) $(top_builddir)/tests/$(am__dirstamp)
 	@rm -f $(top_builddir)/tests/svmmodel$(EXEEXT)
 	$(CXXLINK) $(__top_builddir__tests_svmmodel_OBJECTS) $(__top_builddir__tests_svmmodel_LDADD) $(LIBS)
+src/tests/test_userdefkernel.$(OBJEXT): src/tests/$(am__dirstamp) \
+	src/tests/$(DEPDIR)/$(am__dirstamp)
+$(top_builddir)/tests/userdefkernel$(EXEEXT): $(__top_builddir__tests_userdefkernel_OBJECTS) $(__top_builddir__tests_userdefkernel_DEPENDENCIES) $(EXTRA___top_builddir__tests_userdefkernel_DEPENDENCIES) $(top_builddir)/tests/$(am__dirstamp)
+	@rm -f $(top_builddir)/tests/userdefkernel$(EXEEXT)
+	$(CXXLINK) $(__top_builddir__tests_userdefkernel_OBJECTS) $(__top_builddir__tests_userdefkernel_LDADD) $(LIBS)
 src/tests/test_workflow.$(OBJEXT): src/tests/$(am__dirstamp) \
 	src/tests/$(DEPDIR)/$(am__dirstamp)
 $(top_builddir)/tests/workflow$(EXEEXT): $(__top_builddir__tests_workflow_OBJECTS) $(__top_builddir__tests_workflow_DEPENDENCIES) $(EXTRA___top_builddir__tests_workflow_DEPENDENCIES) $(top_builddir)/tests/$(am__dirstamp)
@@ -862,6 +877,7 @@ mostlyclean-compile:
 	-rm -f src/tests/test_sparsevector.$(OBJEXT)
 	-rm -f src/tests/test_svmensemble.$(OBJEXT)
 	-rm -f src/tests/test_svmmodel.$(OBJEXT)
+	-rm -f src/tests/test_userdefkernel.$(OBJEXT)
 	-rm -f src/tests/test_workflow.$(OBJEXT)
 	-rm -f src/tools/bootstrap.$(OBJEXT)
 	-rm -f src/tools/cross-validate.$(OBJEXT)
@@ -893,6 +909,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_sparsevector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_svmensemble.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_svmmodel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_userdefkernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tests/$(DEPDIR)/test_workflow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tools/$(DEPDIR)/bootstrap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tools/$(DEPDIR)/cross-validate.Po@am__quote@

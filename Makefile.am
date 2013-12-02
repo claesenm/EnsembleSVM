@@ -153,6 +153,9 @@ __top_builddir__tests_svmensemble_LDADD = $(BASELIBS)
 check_PROGRAMS += $(top_builddir)/tests/workflow
 __top_builddir__tests_workflow_SOURCES = src/tests/test_workflow.cpp
 __top_builddir__tests_workflow_LDADD = $(BASELIBS)
+check_PROGRAMS += $(top_builddir)/tests/userdefkernel
+__top_builddir__tests_userdefkernel_SOURCES = src/tests/test_userdefkernel.cpp
+__top_builddir__tests_userdefkernel_LDADD = $(BASELIBS)
 
 # http://www.gnu.org/software/automake/manual/html_node/Scripts_002dbased-Testsuites.html#Scripts_002dbased-Testsuites
 TESTS=$(check_PROGRAMS)

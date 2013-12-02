@@ -123,7 +123,7 @@ inline std::ostream& operator<< (std::ostream &os, const Kernel &kernel){
  */
 class LinearKernel:public Kernel{
 protected:
-	virtual void print(std::ostream &os) const;
+	virtual void print(std::ostream &os) const override;
 
 	/**
 	 * Reads a LinearKernel from <is>.
@@ -136,11 +136,11 @@ protected:
 public:
 	LinearKernel();
 	LinearKernel(const LinearKernel &orig);
-	double k_function(const SparseVector *x, const SparseVector *y) const;
-	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const;
-	virtual unique_ptr<Kernel> clone() const;
+	double k_function(const SparseVector *x, const SparseVector *y) const override;
+	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const override;
+	virtual unique_ptr<Kernel> clone() const override;
 	virtual ~LinearKernel();
-	virtual bool operator==(const Kernel &other) const;
+	virtual bool operator==(const Kernel &other) const override;
 	bool operator==(const LinearKernel &other) const;
 
 	friend class Kernel;
@@ -161,7 +161,7 @@ private:
 	double gamma;
 
 protected:
-	virtual void print(std::ostream &os) const;
+	virtual void print(std::ostream &os) const override;
 
 	/**
 	 * Reads a PolyKernel from <is>.
@@ -177,10 +177,10 @@ protected:
 public:
 	PolyKernel(unsigned degree, double coef0, double gamma);
 	PolyKernel(const PolyKernel &orig);
-	double k_function(const SparseVector *x, const SparseVector *y) const;
-	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const;
+	double k_function(const SparseVector *x, const SparseVector *y) const override;
+	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const override;
 
-	virtual bool operator==(const Kernel &other) const;
+	virtual bool operator==(const Kernel &other) const override;
 	bool operator==(const PolyKernel &other) const;
 
 	// accessor functions
@@ -189,7 +189,7 @@ public:
 	double getGamma() const;
 
 	// clone
-	virtual unique_ptr<Kernel> clone() const;
+	virtual unique_ptr<Kernel> clone() const override;
 
 	// destructor
 	virtual ~PolyKernel();
@@ -215,7 +215,7 @@ protected:
 	 *
 	 * Implemented in io.cpp.
 	 */
-	virtual void print(std::ostream &os) const;
+	virtual void print(std::ostream &os) const override;
 
 	/**
 	 * Reads a RBFKernel from <is>.
@@ -227,17 +227,17 @@ protected:
 public:
 	RBFKernel(double gamma);
 	RBFKernel(const RBFKernel &orig);
-	double k_function(const SparseVector *x, const SparseVector *y) const;
-	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const;
+	double k_function(const SparseVector *x, const SparseVector *y) const override;
+	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const override;
 
-	virtual bool operator==(const Kernel &other) const;
+	virtual bool operator==(const Kernel &other) const override;
 	bool operator==(const RBFKernel &other) const;
 
 	// accessor functions
 	double getGamma() const;
 
 	// clone
-	virtual unique_ptr<Kernel> clone() const;
+	virtual unique_ptr<Kernel> clone() const override;
 
 	// destructor
 	virtual ~RBFKernel();
@@ -259,7 +259,7 @@ private:
 	double gamma;
 
 protected:
-	virtual void print(std::ostream &os) const;
+	virtual void print(std::ostream &os) const override;
 
 	/**
 	 * Reads a SigmoidKernel from <is>.
@@ -271,18 +271,18 @@ protected:
 public:
 	SigmoidKernel(double coef0, double gamma);
 	SigmoidKernel(const SigmoidKernel &orig);
-	double k_function(const SparseVector *x, const SparseVector *y) const;
-	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const;
+	double k_function(const SparseVector *x, const SparseVector *y) const override;
+	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const override;
 
 	bool operator==(const SigmoidKernel &other) const;
-	virtual bool operator==(const Kernel &other) const;
+	virtual bool operator==(const Kernel &other) const override;
 
 	// accessor functions
 	double getCoef() const;
 	double getGamma() const;
 
 	// clone
-	virtual unique_ptr<Kernel> clone() const;
+	virtual unique_ptr<Kernel> clone() const override;
 
 	// destructor
 	virtual ~SigmoidKernel();
@@ -295,11 +295,13 @@ public:
 /**
  * Class to model user-defined kernels.
  *
- * todo implement
+ * This kernel is effectively empty. This kernel is backed by a precomputed matrix.
+ *
+ * Kernel evaluations k(x,y) are effectively y[x[1]].
  */
 class UserdefKernel:public Kernel{
 protected:
-	virtual void print(std::ostream &os) const;
+	virtual void print(std::ostream &os) const override;
 
 	/**
 	 * Reads a UserdefKernel from <is>.
@@ -311,11 +313,11 @@ protected:
 public:
 	UserdefKernel();
 	UserdefKernel(const UserdefKernel &orig);
-	double k_function(const SparseVector *x, const SparseVector *y) const;
-	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const;
-	virtual bool operator==(const Kernel &other) const;
+	double k_function(const SparseVector *x, const SparseVector *y) const override;
+	double k_function(const_iterator Ix, const_iterator Ex, const_iterator Iy, const_iterator Ey) const override;
+	virtual bool operator==(const Kernel &other) const override;
 	bool operator==(const UserdefKernel &other) const;
-	virtual unique_ptr<Kernel> clone() const;
+	virtual unique_ptr<Kernel> clone() const override;
 	virtual ~UserdefKernel();
 
 	friend class Kernel;

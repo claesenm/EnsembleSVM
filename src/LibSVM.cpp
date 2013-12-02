@@ -68,6 +68,25 @@ svm_node *SV2Node(const SparseVector *v){
 	return node;
 }
 
+/**
+ * Creates a LibSVM svm_node for precomputed kernel from v.
+ * The resulting svm_node is allocated using malloc and requires proper handling.
+ *
+ * For precomputed kernels, the first column is the row index and the rest contains the kernel matrix.
+ */
+svm_node *SV2NodePrecomputed(const SparseVector *v, double rowidx){
+	svm_node *node=Malloc(svm_node,v->numNonzero()+2);
+	node[0].index=0;
+	node[0].value=rowidx;
+	unsigned idx=1;
+	for(SparseVector::const_iterator I=v->begin(),E=v->end();I!=E;++I,++idx){
+		node[idx].index=I->first;
+		node[idx].value=I->second;
+	}
+	node[idx].index=-1;
+	return node;
+}
+
 
 unique_ptr<Kernel> extractKernel(const svm_parameter &param){
 	unique_ptr<Kernel> kernel;
@@ -85,7 +104,7 @@ unique_ptr<Kernel> extractKernel(const svm_parameter &param){
 		kernel.reset(new SigmoidKernel(param.coef0,param.gamma));
 		break;
 	case KERNEL_TYPES::USERDEF: // precomputed kernel
-		// todo
+		kernel.reset(new UserdefKernel());
 		break;
 	default:
 		std::ostringstream ss(std::ostringstream::out);
@@ -110,7 +129,7 @@ SVMModel::SV_container extractSV(const svm_model &libsvm){
 		assert(sv.get() && "Corrupt SV!");
 		SVs.emplace_back(sv.release());
 	}
-	return std::move(SVs);
+	return SVs;
 }
 
 SVMModel::Classes extractClasses(const svm_model &libsvm){
@@ -126,7 +145,7 @@ SVMModel::Classes extractClasses(const svm_model &libsvm){
 		string label=os.str();
 		classes.at(i)=std::make_pair(label,nr_sv);
 	}
-	return std::move(classes);
+	return classes;
 }
 
 SVMModel::Weights extractWeights(const svm_model &libsvm){
@@ -139,7 +158,7 @@ SVMModel::Weights extractWeights(const svm_model &libsvm){
 			weights.at(idx)=libsvm.sv_coef[i][j];
 		}
 	}
-	return std::move(weights);
+	return weights;
 }
 
 std::vector<double> extractConstants(const svm_model &libsvm){
@@ -147,7 +166,7 @@ std::vector<double> extractConstants(const svm_model &libsvm){
 	unsigned numconstants = numclasses*(numclasses-1)/2;
 
 	std::vector<double> constants(&libsvm.rho[0],&libsvm.rho[numconstants]);
-	return std::move(constants);
+	return constants;
 }
 
 /**
@@ -228,6 +247,11 @@ unique_ptr<SVMModel> convert(unique_ptr<svm_model> libsvm){
 
 	// extract SV
 	SVMModel::SV_container&& SVs = extractSV(*libsvm);
+	if(kernel->getType() == KERNEL_TYPES::USERDEF){
+		for(auto &SV: SVs){
+			*SV = SparseVector{std::vector<double>(1,SV->begin()->second)};
+		}
+	}
 
 	// extract SV weights
 	SVMModel::Weights&& weights = extractWeights(*libsvm);
@@ -246,88 +270,27 @@ unique_ptr<SVMModel> convert(unique_ptr<svm_model> libsvm){
 	svm_free_and_destroy_model(&libsvmmodel);
 	libsvm.release();
 
-	return std::move(model);
+	return model;
 }
 
 unique_ptr<SVMModel> trainBSVM(const Kernel *kernel, double pospen, double negpen,
 		double cachesize, const vector<const SparseVector*> &data, const vector<bool> &labels,
-		const vector<double> &penalties, unsigned trainsize, bool mutelibsvm){
+		const vector<double> &penalties, std::vector<unsigned> bootstrap, bool mutelibsvm){
 
-	auto problem=construct_BSVM_problem(kernel, pospen, negpen, cachesize, data, labels, penalties, trainsize, mutelibsvm);
+	auto problem=construct_BSVM_problem(kernel, pospen, negpen, cachesize, data, labels, penalties, std::move(bootstrap), mutelibsvm);
 	return libsvm_train(std::move(problem));
 }
-
-//unique_ptr<SVMModel> trainBSVM(const Kernel *kernel, double pospen, double negpen,
-//		double cachesize, const vector<const SparseVector*> &data, const vector<bool> &labels,
-//		const vector<double> &penalties, unsigned trainsize, bool mutelibsvm){
-//	if(mutelibsvm)
-//		svm_set_print_string_function(&print_nullptr);
-//
-//	// construct LibSVM svm_parameters
-//	svm_parameter *param=Malloc(svm_parameter,1);
-//	param->svm_type=C_SVC; // C-SVC, defined in LibSVM's svm.h
-//	param->cache_size = cachesize;
-//
-//	completeSVMParameter(kernel,param);
-//	param->C = 1.0;	// weight is completely defined in pospen/negpen OR pointwise weights
-//
-//	// default values from LibSVM's svm-train.c
-//	param->eps = 1e-3;
-//	param->shrinking = 1;
-//	param->probability = 0;
-//
-//	// weights are the CLASS-specific weights/labels
-//	param->nr_weight=2;
-//	param->weight = Malloc(double,2);
-//	param->weight[0]=pospen;
-//	param->weight[1]=negpen;
-//	param->weight_label = Malloc(int,2); // internally uses integer labels +1 for positive class, -1 for negative
-//	param->weight_label[0]=+1;
-//	param->weight_label[1]=-1;
-//
-//	svm_problem *prob=Malloc(svm_problem,1);
-//	prob->l = trainsize;
-//
-//	// insert training labels
-//	prob->y = Malloc(double,trainsize);
-//	for(unsigned idx=0;idx<trainsize;++idx){
-//		if(labels[idx]) prob->y[idx] = +1;
-//		else prob->y[idx] = -1;
-//	}
-//
-//	// insert training data
-//	prob->x=Malloc(svm_node*,trainsize);
-//	for(unsigned idx=0;idx<trainsize;++idx){
-//		prob->x[idx] = SV2Node(data[idx]);
-//	}
-//
-//	// pointwise penalties
-//	prob->W=Malloc(double,trainsize);
-//	for(unsigned idx=0;idx<trainsize;++idx)
-//		prob->W[idx]=penalties[idx];
-//
-//
-//	// construct and convert svmmodel
-//	unique_ptr<svm_model> libsvmmodel(svm_train(prob, param));
-//
-//	// clean up
-//	svm_destroy_param(param);
-//	free(prob->W);
-//	free(prob->x);
-//	free(prob->y);
-//	free(prob);
-//
-//	return std::move(convert(std::move(libsvmmodel)));
-//}
 
 
 
 full_svm_problem construct_BSVM_problem
 (const Kernel *kernel, double pospen, double negpen,
 		double cachesize, const vector<const SparseVector*> &data, const vector<bool> &labels,
-		const vector<double> &penalties, unsigned trainsize, bool mutelibsvm){
+		const vector<double> &penalties, std::vector<unsigned> bootstrap, bool mutelibsvm){
 	if(mutelibsvm)
 		svm_set_print_string_function(&print_nullptr);
+
+	size_t trainsize = bootstrap.size();
 
 	// construct LibSVM svm_parameters
 	std::unique_ptr<svm_parameter> param(Malloc(svm_parameter,1));
@@ -364,7 +327,10 @@ full_svm_problem construct_BSVM_problem
 	// insert training data
 	prob->x=Malloc(svm_node*,trainsize);
 	for(unsigned idx=0;idx<trainsize;++idx){
-		prob->x[idx] = SV2Node(data[idx]);
+		if(kernel->getType() == KERNEL_TYPES::USERDEF)
+			prob->x[idx] = SV2NodePrecomputed(data[idx],bootstrap[idx]);
+		else
+			prob->x[idx] = SV2Node(data[idx]);
 	}
 
 	// pointwise penalties
@@ -390,7 +356,7 @@ std::unique_ptr<SVMModel> libsvm_train(full_svm_problem &&problem){
 	problem.first.release();
 	problem.second.release();
 
-	return std::move(convert(std::move(libsvmmodel)));
+	return convert(std::move(libsvmmodel));
 }
 
 } // ensemble::LibSVM namespace

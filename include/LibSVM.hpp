@@ -82,7 +82,7 @@ unique_ptr<svm_model> readLibSVM(std::istream &is);
  */
 unique_ptr<SVMModel> trainBSVM(const Kernel *kernel, double pospen, double negpen,
 		double cachesize, const vector<const SparseVector*> &data, const vector<bool> &labels,
-		const vector<double> &penalties, unsigned trainsize, bool mutelibsvm=true);
+		const vector<double> &penalties, std::vector<unsigned> bootstrap, bool mutelibsvm=true);
 
 
 std::unique_ptr<SVMModel> libsvm_train(full_svm_problem &&problem);
@@ -90,7 +90,7 @@ std::unique_ptr<SVMModel> libsvm_train(full_svm_problem &&problem);
 full_svm_problem construct_BSVM_problem
 (const Kernel *kernel, double pospen, double negpen,
 		double cachesize, const vector<const SparseVector*> &data, const vector<bool> &labels,
-		const vector<double> &penalties, unsigned trainsize, bool mutelibsvm=true);
+		const vector<double> &penalties, std::vector<unsigned> bootstrap, bool mutelibsvm=true);
 
 /*************************************************************************************************/
 
