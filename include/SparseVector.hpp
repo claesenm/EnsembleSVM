@@ -79,6 +79,7 @@ public:
 
 	SparseVector operator*(const std::vector<double>& scale) const;
 	SparseVector operator*(const SparseVector& scale) const;
+	SparseVector operator*(double scale) const;
 
 	~SparseVector()=default;
 
@@ -205,6 +206,7 @@ void ElementWiseProduct(const vector<T> &x, const vector<T> &y, vector<T> &xy);
 double squaredNorm(const SparseVector &v);
 double squaredNorm(const vector<pair<unsigned,double> > &v);
 
+std::shared_ptr<SparseVector> linear_combination(const std::vector<std::shared_ptr<SparseVector>>& SVs, const std::vector<double>& coeff);
 
 /*************************************************************************************************/
 

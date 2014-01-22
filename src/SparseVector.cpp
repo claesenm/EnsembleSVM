@@ -263,6 +263,39 @@ SparseVector SparseVector::operator*(const SparseVector& scale) const{
 	SparseVector sv(std::move(svdat));
 	return std::move(sv);
 }
+SparseVector SparseVector::operator*(double scale) const{
+	std::deque<std::pair<unsigned,double>> deque;
+
+	SparseVector::SparseSV svdat(deque.begin(),deque.end());
+	std::transform(svdat.begin(),svdat.end(),svdat.begin(),[scale](std::pair<unsigned,double>& p){
+		return std::make_pair(p.first,p.second*scale);
+	});
+
+	SparseVector sv(std::move(svdat));
+	return std::move(sv);
+}
+
+
+std::shared_ptr<SparseVector> linear_combination(const std::vector<std::shared_ptr<SparseVector>>& SVs, const std::vector<double>& coeff){
+	assert(SVs.size() == coeff.size() && "Number of SVs does not match number of coefficients in linear_combination.");
+
+	auto Isv = SVs.begin(), Esv = SVs.end();
+	auto Icoeff = coeff.begin();
+
+	size_t maxsize = 0, thissize=0;
+	for(; Isv!=Esv; ++Isv){
+		thissize = (*Isv)->rbegin()->first;
+		maxsize = thissize > maxsize ? thissize : maxsize;
+	}
+	std::vector<double> sum(maxsize,0.0);
+
+	for(Isv=SVs.begin(); Isv!=Esv; ++Isv, ++Icoeff){
+		for(auto &pair: **Isv)
+			sum[pair.first-1] += *Icoeff * pair.second;
+	}
+
+	return std::make_shared<SparseVector>(sum);
+}
 
 /*************************************************************************************************/
 

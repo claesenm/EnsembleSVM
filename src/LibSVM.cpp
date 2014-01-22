@@ -263,7 +263,24 @@ unique_ptr<SVMModel> convert(unique_ptr<svm_model> libsvm){
 	std::vector<double>&& constants = extractConstants(*libsvm);
 
 	// build model
-	unique_ptr<SVMModel> model(new SVMModel(std::move(SVs),std::move(weights),std::move(classes),std::move(constants),std::move(kernel)));
+	unique_ptr<SVMModel> model;
+	if(kernel->getType() == KERNEL_TYPES::LINEAR){
+		// if the SVM is linear, combine all SVs and weights into a single SV
+		// to enhance prediction speed
+
+		auto sum = linear_combination(SVs,weights);
+
+		SVMModel::Weights newweight(1,1.0);
+		SVMModel::SV_container newsv(1,sum);
+		SVMModel::Classes newclasses(2);
+		newclasses[0]=std::make_pair(std::string("1"),1);
+		newclasses[1]=std::make_pair(std::string("-1"),0);
+
+		model.reset(new SVMModel(std::move(newsv),std::move(newweight),std::move(newclasses),std::move(constants),std::move(kernel)));
+
+	}else{
+		model.reset(new SVMModel(std::move(SVs),std::move(weights),std::move(classes),std::move(constants),std::move(kernel)));
+	}
 
 	// clean up
 	svm_model *libsvmmodel = libsvm.get(); // todo: create libsvm deleter for unique_ptr

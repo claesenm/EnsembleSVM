@@ -124,6 +124,25 @@ int main(int argc, char **argv)
 		v1.trim(3);
 		test_eq(v,v1);
 	}
+	{
+		std::cout << "Testing linear combinations." << std::endl;
+
+		std::vector<std::shared_ptr<SparseVector>> vectors(3);
+
+		std::vector<double> d1={1.0,2.0,3.0};
+		vectors[0] = std::make_shared<SparseVector>(d1);
+		std::vector<double> d2={0.0,2.0,0.0,4.0};
+		vectors[1] = std::make_shared<SparseVector>(d2);
+		std::vector<double> d3={-1.0,0.0,1.0,0.0};
+		vectors[2] = std::make_shared<SparseVector>(d3);
+
+		std::vector<double> coeff = {1.0,2.0,3.0};
+		std::vector<double> solution{-2.0,6.0,6.0,8.0};
+		SparseVector sol(solution);
+
+		std::shared_ptr<SparseVector> result = linear_combination(vectors, coeff);
+		test_eq(sol,*result);
+	}
 
 	if(globalerr) exit(EXIT_FAILURE);
 	else exit(EXIT_SUCCESS);
