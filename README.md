@@ -20,7 +20,7 @@ these base models into a strong ensemble.
 ![workflow](doc/workflow.png?raw=true "Workflow")
 
 If you use EnsembleSVM, please cite our paper:
-> M. Claesen, F. De Smet, J. Suykens, and B. De Moor, "*EnsembleSVM: A library for ensemble learning using support vector machines*" Journal of Machine Learning Research, vol. 15, pp. 141–145, 2014.
+> M. Claesen, F. De Smet, J. Suykens, and B. De Moor, "*EnsembleSVM: A library for ensemble learning using support vector machines*", Journal of Machine Learning Research, vol. 15, pp. 141–145, 2014.
 
 ## Various
 
