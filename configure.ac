@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.67])
-AC_INIT([EnsembleSVM], [2.0], [marc.claesen@esat.kuleuven.be],[ensemblesvm],[http://esat.kuleuven.be/sista/ensemblesvm])
+AC_INIT([EnsembleSVM], [2.1], [marc.claesen@esat.kuleuven.be],[ensemblesvm],[http://esat.kuleuven.be/sista/ensemblesvm])
 AC_CONFIG_SRCDIR([src/CLI.cpp])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
@@ -16,7 +16,7 @@ AC_SUBST([DEFAULT_LIBSVM_DIR],[libsvm-weights-3.17])
 
 # Library version, this is an LDFLAG for Libtool -version-info 0:0:0
 # http://www.sourceware.org/autobook/autobook/autobook_91.html#SEC91
-AC_SUBST([SHLIBVER],[2:0:0])
+AC_SUBST([SHLIBVER],[2:1:1])
 
 AC_SUBST([PACKAGE_VERSION])
 
