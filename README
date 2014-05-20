@@ -19,7 +19,7 @@ For installation instructions, please refer to the file INSTALL or
 our webpage. Our webpage also contains an elaborate user manual and
 some use cases to familiarise users with the software.
 
-![workflow](/doc/workflow.png?raw=true "Workflow")
+![workflow](doc/workflow.png?raw=true "Workflow")
 
 Please report bugs to marc.claesen@esat.kuleuven.be. 
 
