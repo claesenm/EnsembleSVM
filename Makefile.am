@@ -24,7 +24,7 @@ AM_CPPFLAGS =-I$(top_srcdir)/include -I$(top_builddir)/src/libsvm -ffast-math
 # DISTRIBUTION #
 ################
 
-EXTRA_DIST = doc/doxygen.cfg.in doc/Makefile.in doc/workflow.png COPYING.LESSER LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp \
+EXTRA_DIST = doc/doxygen.cfg.in doc/Makefile.in doc/workflow.png COPYING.LESSER README.md LICENSE $(DEFAULT_LIBSVM_DIR)/svm.cpp \
 	$(DEFAULT_LIBSVM_DIR)/svm.h $(DEFAULT_LIBSVM_DIR)/COPYRIGHT boost include/any_iterator
 
 #####################
